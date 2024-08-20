@@ -1,0 +1,180 @@
+openapi: 3.0.3
+
+info:
+  title: API сервиса сотрудников
+  description: API сервиса сотрудников
+  version: 0.0.1
+
+tags:
+  - name: Products
+    description: Товары
+
+paths:
+  /products:
+    get:
+      operationId: getAllProducts
+      summary: Получить список всех товаров
+      description: Получить список всех товаров
+      tags:
+        - Products
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductListInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    post:
+      operationId: createProduct
+      summary: Сохранить новый товар
+      description: Сохранить новый товар
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно сохранены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /products/{productId}:
+    get:
+      operationId: getProductById
+      summary: Получить данные товара по идентификатору
+      description: Получить основные данные товара
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/productId'
+      tags:
+        - Products
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    put:
+      operationId: updateProduct
+      summary: Изменить товар по идентификатору
+      description: Изменить данные товара
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/productId'
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+
+
+components:
+  schemas:
+    #    Модели товаров
+    ProductListInfoResponse:
+      type: object
+      description: Данные товара в списке товаров
+      properties:
+        name:
+          $ref: '../objects.yaml#/components/schemas/ProductName'
+        type:
+          $ref: '../objects.yaml#/components/schemas/ProductType'
+        price:
+          $ref: '../objects.yaml#/components/schemas/ProductPrice'
+
+    ProductSaveRequest:
+      type: object
+      description: Создание нового товара
+      properties:
+        name:
+          $ref: '../objects.yaml#/components/schemas/ProductName'
+        description:
+          $ref: '../objects.yaml#/components/schemas/ProductDescription'
+        type:
+          $ref: '../objects.yaml#/components/schemas/ProductType'
+        price:
+          $ref: '../objects.yaml#/components/schemas/ProductPrice'
+        manual:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualSaveRequest'
+
+    ProductInfoResponse:
+      type: object
+      description: Данные товара
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/ProductId'
+        name:
+          $ref: '../objects.yaml#/components/schemas/ProductName'
+        description:
+          $ref: '../objects.yaml#/components/schemas/ProductDescription'
+        type:
+          $ref: '../objects.yaml#/components/schemas/ProductType'
+        price:
+          $ref: '../objects.yaml#/components/schemas/ProductPrice'
+        manual:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualSaveRequest'
+
+    #    Модели руководств
+    ManualSaveRequest:
+      type: object
+      description: Данные руководства по сборке товара
+      properties:
+        material:
+          $ref: '../objects.yaml#/components/schemas/MaterialId'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/ManualQuantity'
+
