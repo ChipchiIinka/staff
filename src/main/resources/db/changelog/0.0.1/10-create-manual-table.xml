@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="create-manual-table" author="gizbrekht.md">
+        <sql>
+            CREATE TABLE public.manual (
+                product_id int8 NOT NULL,
+                material_id int8 NOT NULL,
+                quantity int4 DEFAULT 1 NOT NULL,
+                CONSTRAINT recipe_materials_fk FOREIGN KEY (material_id) REFERENCES public.materials(id) ON UPDATE CASCADE,
+                CONSTRAINT recipe_products_fk FOREIGN KEY (product_id) REFERENCES public.products(id) ON UPDATE CASCADE
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
