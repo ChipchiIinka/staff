@@ -1,0 +1,172 @@
+openapi: 3.0.3
+
+info:
+  title: API сервиса сотрудников
+  description: API сервиса сотрудников
+  version: 0.0.1
+
+tags:
+  - name: Materials
+    description: Материалы
+
+paths:
+  /materials:
+    get:
+      operationId: getAllMaterials
+      summary: Получить список всех материалов
+      description: Получить список всех материалов
+      tags:
+        - Materials
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialListInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    post:
+      operationId: createMaterial
+      summary: Сохранить новый материал
+      description: Сохранить новый материал
+      tags:
+        - Materials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaterialSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно сохранены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /materials/{materialId}:
+    get:
+      operationId: getMaterialById
+      summary: Получить данные материала по идентификатору
+      description: Получить основные данные материала
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/materialId'
+      tags:
+        - Materials
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    put:
+      operationId: updateMaterial
+      summary: Изменить материал по идентификатору
+      description: Изменить данные материала
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/materialId'
+      tags:
+        - Materials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaterialSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+
+components:
+  schemas:
+    #    Модели материалов
+    MaterialListInfoResponse:
+      type: object
+      description: Данные материала в списке материалов
+      properties:
+        name:
+          $ref: '../objects.yaml#/components/schemas/MaterialName'
+        type:
+          $ref: '../objects.yaml#/components/schemas/MaterialType'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/MaterialAllStoragesQuantity'
+        short_info:
+          $ref: '../objects.yaml#/components/schemas/MaterialShortInfo'
+
+    MaterialSaveRequest:
+      type: object
+      description: Создание нового материала
+      properties:
+        name:
+          $ref: '../objects.yaml#/components/schemas/MaterialName'
+        description:
+          $ref: '../objects.yaml#/components/schemas/MaterialDescription'
+        type:
+          $ref: '../objects.yaml#/components/schemas/MaterialType'
+        length:
+          $ref: '../objects.yaml#/components/schemas/MaterialLength'
+        width:
+          $ref: '../objects.yaml#/components/schemas/MaterialWidth'
+        height:
+          $ref: '../objects.yaml#/components/schemas/MaterialHeight'
+
+    MaterialInfoResponse:
+      type: object
+      description: Данные материала
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/MaterialId'
+        name:
+          $ref: '../objects.yaml#/components/schemas/MaterialName'
+        description:
+          $ref: '../objects.yaml#/components/schemas/MaterialDescription'
+        type:
+          $ref: '../objects.yaml#/components/schemas/MaterialType'
+        length:
+          $ref: '../objects.yaml#/components/schemas/MaterialLength'
+        width:
+          $ref: '../objects.yaml#/components/schemas/MaterialWidth'
+        height:
+          $ref: '../objects.yaml#/components/schemas/MaterialHeight'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/MaterialAllStoragesQuantity'

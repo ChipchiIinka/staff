@@ -1,0 +1,268 @@
+openapi: 3.0.3
+
+info:
+  title: API сервиса сотрудников
+  description: API сервиса сотрудников
+  version: 0.0.1
+
+tags:
+  - name: Staff
+    description: Сотрудники
+
+paths:
+  /staff:
+    post:
+      operationId: getAllStaff
+      summary: Получить список всех сотрудников
+      description: Получить список всех сотрудников
+      tags:
+        - Staff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffInfoPagingRequest'
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffInfoPagingResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /staff/save:
+    post:
+      tags:
+        - Staff
+      operationId: saveStaff
+      summary: Сохранения сотрудника в системе
+      description: Сохранения сотрудника в системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно сохранены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /staff/search:
+    post:
+      operationId: searchStaff
+      summary: Получить список сотрудников
+      description: Получить список сотрудников по заданной фильтрации
+      tags:
+        - Staff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffInfoPagingRequest'
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffInfoPagingResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /staff/{staffId}:
+    delete:
+      tags:
+        - Staff
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/staffId'
+      operationId: deleteStaffById
+      summary: Мягкое удаление сотрудника
+      description: Мягкое удаление сотрудника
+      responses:
+        200:
+          description: Данные были успешно сохранены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    get:
+      operationId: getStaffById
+      summary: Получить пользователя по логину
+      description: Получить основные данные пользователя
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/staffId'
+      tags:
+        - Staff
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /staff/{staffId}/mark-as-unbanned:
+    patch:
+      operationId: markAsUnbanned
+      summary: Разбанить сотрудника по логину
+      description: Разбанить сотрудника по логину
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/staffId'
+      tags:
+        - Staff
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+
+components:
+  schemas:
+#    Модели сотрудников
+    StaffInfoPagingResponse:
+      type: object
+      properties:
+        paging:
+          $ref: '../service.yaml#/components/schemas/Paging'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffAdminInfoResponse'
+
+    StaffAdminInfoResponse:
+      type: object
+      description: Данные о сотруднике для администратора
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/StaffId'
+        login:
+          $ref: '../objects.yaml#/components/schemas/StaffLogin'
+        first_name:
+          $ref: '../objects.yaml#/components/schemas/StaffFirstName'
+        second_name:
+          $ref: '../objects.yaml#/components/schemas/StaffSecondName'
+        last_name:
+          $ref: '../objects.yaml#/components/schemas/StaffLastName'
+        email:
+          $ref: '../objects.yaml#/components/schemas/StaffEmail'
+        role:
+          $ref: '../objects.yaml#/components/schemas/UserRole'
+        position:
+          $ref: '../objects.yaml#/components/schemas/StaffPosition'
+        is_deleted:
+          $ref: '../objects.yaml#/components/schemas/StaffIsDeleted'
+
+    StaffInfoPagingRequest:
+      type: object
+      required:
+        - paging
+        - filters
+      properties:
+        paging:
+          $ref: '../service.yaml#/components/schemas/Paging'
+        filters:
+          $ref: '#/components/schemas/StaffInfoFiltersRequest'
+
+    StaffInfoFiltersRequest:
+      type: object
+      description: Данные для фильтрации сотрудников
+      properties:
+        first_name:
+          $ref: '../objects.yaml#/components/schemas/StaffFirstName'
+        second_name:
+          $ref: '../objects.yaml#/components/schemas/StaffSecondName'
+        last_name:
+          $ref: '../objects.yaml#/components/schemas/StaffLastName'
+
+    StaffInfoResponse:
+      type: object
+      description: Данные сотрудника для личной карточки
+      properties:
+        login:
+          $ref: '../objects.yaml#/components/schemas/StaffLogin'
+        second_name:
+          $ref: '../objects.yaml#/components/schemas/StaffSecondName'
+        first_name:
+          $ref: '../objects.yaml#/components/schemas/StaffFirstName'
+        last_name:
+          $ref: '../objects.yaml#/components/schemas/StaffLastName'
+        email:
+          $ref: '../objects.yaml#/components/schemas/StaffEmail'
+        position:
+          $ref: '../objects.yaml#/components/schemas/StaffPosition'
+
+    StaffSaveRequest:
+      type: object
+      description: Регистрация нового сотрудника
+      properties:
+        first_name:
+          $ref: '../objects.yaml#/components/schemas/StaffFirstName'
+        second_name:
+          $ref: '../objects.yaml#/components/schemas/StaffSecondName'
+        last_name:
+          $ref: '../objects.yaml#/components/schemas/StaffLastName'
+        login:
+          $ref: '../objects.yaml#/components/schemas/StaffLogin'
+        email:
+          $ref: '../objects.yaml#/components/schemas/StaffEmail'
+        password:
+          $ref: '../objects.yaml#/components/schemas/StaffPassword'
+        phone_number:
+          $ref: '../objects.yaml#/components/schemas/StaffPhoneNumber'
+        role:
+          $ref: '../objects.yaml#/components/schemas/UserRole'
+        position:
+          $ref: '../objects.yaml#/components/schemas/StaffPosition'

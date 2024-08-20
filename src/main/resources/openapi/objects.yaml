@@ -1,0 +1,195 @@
+components:
+  parameters:
+    staffId:
+      name: staffId
+      in: path
+      required: true
+      description: Идентификатор сотрудника
+      schema:
+        $ref: '#/components/schemas/StaffId'
+    orderId:
+      name: orderId
+      in: path
+      required: true
+      description: Идентификатор заказа
+      schema:
+        $ref: '#/components/schemas/OrderId'
+    productId:
+      name: productId
+      in: path
+      required: true
+      description: Идентификатор товара
+      schema:
+        $ref: '#/components/schemas/ProductId'
+    materialId:
+      name: materialId
+      in: path
+      required: true
+      description: Идентификатор материала
+      schema:
+        $ref: '#/components/schemas/MaterialId'
+    storageId:
+      name: storageId
+      in: path
+      required: true
+      description: Идентификатор склада
+      schema:
+        $ref: '#/components/schemas/StorageId'
+
+  schemas:
+    StaffId:
+      type: integer
+      description: Идентификатор сотрудника в системе
+      format: int64
+    StaffLogin:
+      type: string
+      description: Логин сотрудника
+    StaffEmail:
+      type: string
+      description: Электронная почта сотрудника
+    StaffPassword:
+      type: string
+      description: Пароль сотрудника
+        - ADMIN
+    StaffPhoneNumber:
+      type: string
+      description: Номер телефона сотрудника
+    UserRole:
+      type: string
+      description: Роль пользователя
+      enum:
+        - USER
+        - ADMIN
+    StaffPosition:
+      type: string
+      description: Должность сотрудника
+      enum:
+        - CONSTRUCTOR,
+        - MANAGER,
+        - DIRECTOR,
+        - WAREHOUSEMAN,
+        - COURIER,
+        - PURCHASING_AGENT
+    StaffIsDeleted:
+      type: boolean
+      description: Удален ли сотрудник
+    StaffFirstName:
+      type: string
+      description: Имя сотрудника
+    StaffSecondName:
+      type: string
+      description: Фамилия сотрудника
+    StaffLastName:
+      type: string
+      description: Отчество сотрудника
+    StaffFullName:
+      type: string
+      description: Полное имя сотрудника
+
+    OrderId:
+      type: integer
+      description: Идентификатор склада в системе
+      format: int64
+    OrderCity:
+      type: string
+      description: Название города заказчика
+    OrderStreet:
+      type: string
+      description: Название улицы заказчика
+    OrderHouse:
+      type: string
+      description: Номер дома заказчика
+    OrderDate:
+      type: string
+      description: Время заказа
+      format: date
+    OrderStatus:
+      type: string
+      description: Статус заказа
+      enum:
+        - COMPLETED,
+        - DELIVERY,
+        - PACKAGING,
+        - ASSEMBLY,
+        - PREPARATION,
+        - ACCEPTED,
+        - CANCELED,
+        - ACCEPTANCE
+    OrderAddress:
+      type: string
+      description: Полный адрес заказа
+
+    ProductId:
+      type: integer
+      description: Идентификатор товара в системе
+      format: int64
+    ProductName:
+      type: string
+      description: Название товара
+    ProductDescription:
+      type: string
+      description: Описание товара
+    ProductType:
+      type: string
+      description: Тип товара
+    ProductPrice:
+      type: number
+      description: Цена товара
+      format: double
+
+    MaterialId:
+      type: integer
+      description: Идентификатор материала в системе
+      format: int64
+    MaterialName:
+      type: string
+      description: Название материала
+    MaterialDescription:
+      type: string
+      description: Описание материала
+    MaterialType:
+      type: string
+      description: Тип материала
+    MaterialLength:
+      type: integer
+      description: Длина материала
+    MaterialWidth:
+      type: integer
+      description: Ширина материала
+    MaterialHeight:
+      type: integer
+      description: Высота материала
+    MaterialAllStoragesQuantity:
+      type: integer
+      description: Количество материала во всех складах
+      format: int64
+    MaterialShortInfo:
+      type: string
+      description: Краткая информация о размерах материала Длина/Ширина/Высота
+
+    ManualQuantity:
+      type: integer
+      description: Количество нужного материала
+
+    StorageId:
+      type: integer
+      description: Идентификатор склада в системе
+      format: int64
+    StorageCity:
+      type: string
+      description: Название города склада
+    StorageStreet:
+      type: string
+      description: Название улицы склада
+    StorageHouse:
+      type: string
+      description: Номер дома склада
+    StorageAddress:
+      type: string
+      description: Адрес склада
+    MaterialQuantity:
+      type: integer
+      description: Количество материала на складе
+    ProductQuantity:
+      type: integer
+      description: Количество товара на складе

@@ -1,0 +1,189 @@
+openapi: 3.0.3
+
+info:
+  title: API сервиса сотрудников
+  description: API сервиса сотрудников
+  version: 0.0.1
+
+tags:
+  - name: Storages
+    description: Склады
+
+paths:
+  /storages:
+    get:
+      operationId: getAllStorages
+      summary: Получить список всех складов
+      description: Получить список всех складов
+      tags:
+        - Storages
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageListInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    post:
+      operationId: createStorage
+      summary: Сохранить новый склад
+      description: Сохранить новый склад
+      tags:
+        - Storages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно сохранены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /storages/{storageId}:
+    get:
+      operationId: getStorageById
+      summary: Получить данные склада по идентификатору
+      description: Получить основные данные склада
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/storageId'
+      tags:
+        - Storages
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorageInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+    put:
+      operationId: updateStorage
+      summary: Изменить склад по идентификатору
+      description: Изменить данные склада
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/storageId'
+      tags:
+        - Storage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+
+components:
+  schemas:
+    #    Модели складов
+    StorageListInfoResponse:
+      type: object
+      description: Данные склада в списке складов
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/StorageId'
+        address:
+          $ref: '../objects.yaml#/components/schemas/StorageAddress'
+
+    StorageSaveRequest:
+      type: object
+      description: Создание нового склада
+      properties:
+        city:
+          $ref: '../objects.yaml#/components/schemas/StorageCity'
+        street:
+          $ref: '../objects.yaml#/components/schemas/StorageStreet'
+        house:
+          $ref: '../objects.yaml#/components/schemas/StorageHouse'
+
+    StorageInfoResponse:
+      type: object
+      description: Данные склада
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/StorageId'
+        address:
+          $ref: '../objects.yaml#/components/schemas/StorageAddress'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductStorageResponse'
+        materials:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialStorageResponse'
+
+    ProductStorageResponse:
+      type: object
+      description: Продукты на складе
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/ProductId'
+        name:
+          $ref: '../objects.yaml#/components/schemas/ProductName'
+        type:
+          $ref: '../objects.yaml#/components/schemas/ProductType'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/ProductQuantity'
+
+    MaterialStorageResponse:
+      type: object
+      description: Материалы на складе
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/MaterialId'
+        name:
+          $ref: '../objects.yaml#/components/schemas/MaterialName'
+        type:
+          $ref: '../objects.yaml#/components/schemas/MaterialType'
+        short_info:
+          $ref: '../objects.yaml#/components/schemas/MaterialShortInfo'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/ManualQuantity'
+
+
