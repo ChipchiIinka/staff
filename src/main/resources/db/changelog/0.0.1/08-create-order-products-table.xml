@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="create-order-products-table" author="gizbrekht.md">
+        <sql>
+            CREATE TABLE public.order_products (
+                order_id int8 NOT NULL,
+                product_id int8 NOT NULL,
+                CONSTRAINT order_products_orders_fk FOREIGN KEY (order_id) REFERENCES public.orders(id) ON UPDATE CASCADE,
+                CONSTRAINT order_products_products_fk FOREIGN KEY (product_id) REFERENCES public.products(id)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

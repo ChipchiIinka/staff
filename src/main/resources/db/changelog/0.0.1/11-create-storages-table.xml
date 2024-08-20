@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="create-storages-table" author="gizbrekht.md">
+        <sql>
+            CREATE TABLE public.storages (
+                id int8 NOT NULL,
+                address varchar NOT NULL,
+                CONSTRAINT storages_pk PRIMARY KEY (id),
+                CONSTRAINT storages_unique UNIQUE (address)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
