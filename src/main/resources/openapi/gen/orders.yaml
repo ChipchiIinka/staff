@@ -1,0 +1,228 @@
+openapi: 3.0.3
+
+info:
+  title: API сервиса сотрудников
+  description: API сервиса сотрудников
+  version: 0.0.1
+
+tags:
+  - name: Orders
+    description: Заказы
+
+paths:
+  /orders:
+    get:
+      operationId: getAllOrders
+      summary: Получить список всех заказов
+      description: Получить список всех заказов
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderListInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    post:
+      operationId: createOrder
+      summary: Сохранить новый заказ
+      description: Сохранить новый заказ
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderSaveRequest'
+      responses:
+        200:
+          description: Данные были успешно сохранены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /orders/{orderId}:
+    get:
+      operationId: getOrderById
+      summary: Получить данные заказа по идентификатору
+      description: Получить основные данные заказа
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    patch:
+      operationId: updateOrderStatus
+      summary: Изменить статус заказа по идентификатору
+      description: Изменить статус заказа на следующий
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /orders/{orderId}/restart:
+    patch:
+      operationId: updateOrderStatusToPreparation
+      summary: Изменить статус заказа по идентификатору
+      description: Изменить статус заказа на подготовку
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /orders/{orderId}/materials:
+    get:
+      operationId: getAllNeededMaterials
+      summary: Получить список нужных материалов для заказа
+      description: Получить список нужных материалов для заказа
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно получены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderMaterialInfoResponse'
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+
+components:
+  schemas:
+  #    Модели заказов
+    OrderListInfoResponse:
+      type: object
+      description: Данные заказа в списке заказов
+      properties:
+        address:
+          $ref: '../objects.yaml#/components/schemas/OrderAddress'
+        date:
+          $ref: '../objects.yaml#/components/schemas/OrderDate'
+        status:
+          $ref: '../objects.yaml#/components/schemas/OrderStatus'
+
+    OrderSaveRequest:
+      type: object
+      description: Создание нового заказа
+      properties:
+        city:
+          $ref: '../objects.yaml#/components/schemas/OrderCity'
+        street:
+          $ref: '../objects.yaml#/components/schemas/OrderStreet'
+        house:
+          $ref: '../objects.yaml#/components/schemas/OrderHouse'
+        order_products:
+          type: array
+          items:
+            $ref: '../objects.yaml#/components/schemas/ProductId'
+
+    OrderInfoResponse:
+      type: object
+      description: Данные заказа
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/OrderId'
+        address:
+          $ref: '../objects.yaml#/components/schemas/OrderAddress'
+        date:
+          $ref: '../objects.yaml#/components/schemas/OrderDate'
+        status:
+          $ref: '../objects.yaml#/components/schemas/OrderStatus'
+        order_products:
+          type: array
+          items:
+            $ref: '../objects.yaml#/components/schemas/ProductName'
+
+    OrderMaterialInfoResponse:
+      type: object
+      description: Данные заказа
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/OrderId'
+        needed_materials:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManualInfoResponse'
+
+    ManualInfoResponse:
+      type: object
+      description: Нужные материалы для товара
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/MaterialId'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/ManualQuantity'

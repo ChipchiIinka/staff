@@ -1,0 +1,74 @@
+openapi: 3.0.3
+
+info:
+  title: API сервиса сотрудников
+  description: API сервиса сотрудников
+  version: 0.0.1
+
+paths: {}
+
+components:
+  schemas:
+    Paging:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        count:
+          type: integer
+          format: int64
+        pages:
+          type: integer
+
+    Error:
+      type: object
+      description: Объект при возникновении ошибки
+      properties:
+        trace_id:
+          type: string
+          description: Уникальный идентификатор ошибки
+        timestamp:
+          type: string
+          format: date-time
+          description: Время возникновения ошибки
+        message:
+          type: string
+          description: Сообщение ошибки
+
+  responses:
+    BAD_REQUEST:
+      description: Ошибка бизнес-логики
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    UNAUTHORIZED:
+      description: Не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    FORBIDDEN:
+      description: Нет прав на выполнение операции
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NOT_FOUND:
+      description: Запрашиваемый ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    INTERNAL_SERVER_ERROR:
+      description: Техническая ошибка
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
