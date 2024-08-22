@@ -128,8 +128,6 @@ components:
           $ref: '../objects.yaml#/components/schemas/MaterialName'
         type:
           $ref: '../objects.yaml#/components/schemas/MaterialType'
-        quantity:
-          $ref: '../objects.yaml#/components/schemas/MaterialAllStoragesQuantity'
         short_info:
           $ref: '../objects.yaml#/components/schemas/MaterialShortInfo'
 

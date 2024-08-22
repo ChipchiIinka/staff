@@ -64,11 +64,11 @@ components:
       type: string
       description: Должность сотрудника
       enum:
-        - CONSTRUCTOR,
-        - MANAGER,
-        - DIRECTOR,
-        - WAREHOUSEMAN,
-        - COURIER,
+        - CONSTRUCTOR
+        - MANAGER
+        - DIRECTOR
+        - WAREHOUSEMAN
+        - COURIER
         - PURCHASING_AGENT
     StaffIsDeleted:
       type: boolean
@@ -107,13 +107,13 @@ components:
       type: string
       description: Статус заказа
       enum:
-        - COMPLETED,
-        - DELIVERY,
-        - PACKAGING,
-        - ASSEMBLY,
-        - PREPARATION,
-        - ACCEPTED,
-        - CANCELED,
+        - COMPLETED
+        - DELIVERY
+        - PACKAGING
+        - ASSEMBLY
+        - PREPARATION
+        - ACCEPTED
+        - CANCELED
         - ACCEPTANCE
     OrderAddress:
       type: string
