@@ -158,6 +158,7 @@
                                 <jsonIgnoreNullFields>true</jsonIgnoreNullFields>
                                 <openApiNullable>false</openApiNullable>
                                 <useJakartaEe>true</useJakartaEe>
+                                <useResponseEntity>false</useResponseEntity>
                             </configOptions>
                         </configuration>
                     </execution>
