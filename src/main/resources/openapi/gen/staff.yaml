@@ -1,8 +1,8 @@
 openapi: 3.0.3
 
 info:
-  title: API сервиса сотрудников
-  description: API сервиса сотрудников
+  title: API сервиса сотрудников - сотрудники
+  description: Работа с сотрудниками
   version: 0.0.1
 
 tags:
@@ -17,15 +17,18 @@ paths:
       description: Получить список всех сотрудников
       tags:
         - Staff
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/pageNumber'
+        - $ref: '../objects.yaml#/components/parameters/pageSize'
+        - $ref: '../objects.yaml#/components/parameters/sortingType'
+        - $ref: '../objects.yaml#/components/parameters/sortingFieldName'
       responses:
         200:
           description: Данные были успешно получены
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StaffListInfoResponse'
+                $ref: '#/components/schemas/StaffInfoPagingResponse'
         400:
           $ref: '../service.yaml#/components/responses/BAD_REQUEST'
         401:
@@ -186,7 +189,7 @@ paths:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
     patch:
       operationId: updateStaffCardById
-      summary: Обновить публичную информацию сотрудника по идентификатору
+      summary: Обновить публичную информацию сотрудника и пароль по идентификатору
       description: Обновить основные данные сотрудника
       parameters:
         - $ref: '../objects.yaml#/components/parameters/staffId'
@@ -216,6 +219,17 @@ paths:
 
 components:
   schemas:
+    #    Модели сотрудников
+    StaffInfoPagingResponse:
+      type: object
+      properties:
+        paging:
+          $ref: '../service.yaml#/components/schemas/Paging'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffListInfoResponse'
+
     StaffListInfoResponse:
       type: object
       properties:

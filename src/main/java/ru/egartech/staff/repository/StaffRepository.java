@@ -11,10 +11,10 @@ import ru.egartech.staff.entity.StaffEntity;
 public interface StaffRepository extends JpaRepository<StaffEntity, Long> {
 
     @Modifying
-    @Query(value = "UPDATE staff SET is_deleted = true WHERE id = :#{#staffId}", nativeQuery = true)
+    @Query(value = "UPDATE staff SET is_deleted = true WHERE id = :staffId", nativeQuery = true)
     void markAsBanned(@Param("staffId") Long staffId);
 
     @Modifying
-    @Query(value = "UPDATE staff SET is_deleted = false WHERE id = :#{#staffId}", nativeQuery = true)
+    @Query(value = "UPDATE staff SET is_deleted = false WHERE id = :staffId", nativeQuery = true)
     void markAsUnbanned(@Param("staffId") Long staffId);
 }

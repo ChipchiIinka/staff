@@ -13,6 +13,8 @@
                 CONSTRAINT materials_storage_materials_fk FOREIGN KEY (material_id) REFERENCES public.materials(id) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT materials_storage_storages_fk FOREIGN KEY (storage_id) REFERENCES public.storages(id)
             );
+            CREATE UNIQUE INDEX idx_material_storage_unique
+                ON public.materials_storage (material_id, storage_id);
         </sql>
     </changeSet>
 </databaseChangeLog>

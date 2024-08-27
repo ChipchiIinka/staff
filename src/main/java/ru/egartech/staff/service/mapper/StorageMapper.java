@@ -1,6 +1,9 @@
 package ru.egartech.staff.service.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.data.domain.Page;
 import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.StorageEntity;
@@ -9,10 +12,14 @@ import ru.egartech.staff.model.*;
 import java.util.List;
 import java.util.Map;
 
-@Mapper
-public interface StoragesMapper {
+import static ru.egartech.staff.entity.enums.MaterialType.toMaterialDtoType;
+import static ru.egartech.staff.entity.enums.ProductType.toProductDtoType;
 
-    List<StorageListInfoResponseDto> toListDto(List<StorageEntity> storageEntities);
+@Mapper(componentModel="spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+public interface StorageMapper {
+
+    List<StorageListInfoResponseDto> toListDto(Page<StorageEntity> storageEntities);
 
     StorageInfoResponseDto toDto(StorageEntity storageEntity,
                                  List<ProductStorageResponseDto> products,
@@ -31,7 +38,7 @@ public interface StoragesMapper {
                     ProductEntity product = productMap.getKey();
                     dto.setId(product.getId());
                     dto.setName(product.getName());
-                    dto.setType(product.getType());
+                    dto.setType(toProductDtoType(product.getType()));
                     dto.setQuantity(productMap.getValue());
                     return dto;
                 }).toList();
@@ -44,13 +51,11 @@ public interface StoragesMapper {
                     MaterialEntity material = materialMap.getKey();
                     dto.setId(material.getId());
                     dto.setName(material.getName());
-                    dto.setType(material.getType());
+                    dto.setType(toMaterialDtoType(material.getType()));
                     dto.setShortInfo(String.format("%d / %d / %d",
                             material.getLength(), material.getWidth(), material.getHeight()));
                     dto.setQuantity(materialMap.getValue());
                     return dto;
                 }).toList();
     }
-
-
 }

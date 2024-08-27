@@ -1,8 +1,8 @@
 openapi: 3.0.3
 
 info:
-  title: API сервиса сотрудников
-  description: API сервиса сотрудников
+  title: API сервиса сотрудников - материалы
+  description: Справочник материалов сервиса
   version: 0.0.1
 
 tags:
@@ -17,15 +17,18 @@ paths:
       description: Получить список всех материалов
       tags:
         - Materials
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/pageNumber'
+        - $ref: '../objects.yaml#/components/parameters/pageSize'
+        - $ref: '../objects.yaml#/components/parameters/sortingType'
+        - $ref: '../objects.yaml#/components/parameters/sortingFieldName'
       responses:
         200:
           description: Данные были успешно получены
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MaterialListInfoResponse'
+                $ref: '#/components/schemas/MaterialInfoPagingResponse'
         400:
           $ref: '../service.yaml#/components/responses/BAD_REQUEST'
         401:
@@ -115,11 +118,42 @@ paths:
           $ref: '../service.yaml#/components/responses/NOT_FOUND'
         500:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    delete:
+      operationId: deleteMaterialById
+      summary: Навсегда удалить запись материала
+      description: Удалить материал
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/materialId'
+      tags:
+        - Materials
+      responses:
+        200:
+          description: Информация успешно удалена
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
 
 
 components:
   schemas:
     #    Модели материалов
+    MaterialInfoPagingResponse:
+      type: object
+      properties:
+        paging:
+          $ref: '../service.yaml#/components/schemas/Paging'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialListInfoResponse'
+
     MaterialListInfoResponse:
       type: object
       description: Данные материала в списке материалов
@@ -166,5 +200,5 @@ components:
           $ref: '../objects.yaml#/components/schemas/MaterialWidth'
         height:
           $ref: '../objects.yaml#/components/schemas/MaterialHeight'
-        quantity:
+        available:
           $ref: '../objects.yaml#/components/schemas/MaterialAllStoragesQuantity'

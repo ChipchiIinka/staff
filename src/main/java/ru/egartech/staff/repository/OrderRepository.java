@@ -11,14 +11,14 @@ import ru.egartech.staff.entity.OrderEntity;
 import java.util.List;
 
 @Repository
-public interface OrdersRepository extends JpaRepository<OrderEntity, Long> {
+public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
     @Transactional
     @Modifying(clearAutomatically = true)
-    @Query(value = "insert into order_products (order_id, product_id) values (:#{#orderId}, :#{#productId})", nativeQuery = true)
+    @Query(value = "INSERT INTO order_products (order_id, product_id) VALUES (:orderId, :productId)", nativeQuery = true)
     void addProductToOrderProducts(@Param("productId") Long productId, @Param("orderId") Long orderId);
 
     @Modifying
-    @Query(value = "select product_id from order_products where order_id = :#{#orderId}", nativeQuery = true)
+    @Query(value = "SELECT product_id FROM order_products WHERE order_id = :orderId", nativeQuery = true)
     List<Long> findOrderProducts(@Param("orderId") Long orderId);
 }
