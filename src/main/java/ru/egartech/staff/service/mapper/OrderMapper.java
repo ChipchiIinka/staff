@@ -3,27 +3,32 @@ package ru.egartech.staff.service.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.data.domain.Page;
 import ru.egartech.staff.entity.OrderEntity;
 import ru.egartech.staff.entity.ProductEntity;
+import ru.egartech.staff.entity.StaffEntity;
 import ru.egartech.staff.entity.enums.Status;
-import ru.egartech.staff.model.*;
+import ru.egartech.staff.model.ManualInfoResponseDto;
+import ru.egartech.staff.model.OrderInfoResponseDto;
+import ru.egartech.staff.model.OrderListInfoResponseDto;
+import ru.egartech.staff.model.OrderSaveRequestDto;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+@Mapper(componentModel="spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface OrdersMapper {
+public interface OrderMapper {
 
-    List<OrderListInfoResponseDto> toListDto(List<OrderEntity> orders);
+    List<OrderListInfoResponseDto> toListDto(Page<OrderEntity> orders);
 
     //только для List<OrderListInfoResponseDto>
     default OrderListInfoResponseDto toDto(OrderEntity order){
         return new OrderListInfoResponseDto()
                 .address(order.getAddress())
                 .date(order.getDate())
-                .status(toDtoStatus(order.getStatus()));
+                .status(Status.toOrderDtoStatus(order.getStatus()));
     }
 
     default OrderInfoResponseDto toInfoResponseDto(OrderEntity order){
@@ -31,12 +36,13 @@ public interface OrdersMapper {
                 .id(order.getId())
                 .address(order.getAddress())
                 .date(order.getDate())
-                .status(toDtoStatus(order.getStatus()))
-                .orderProducts(order.getProducts().stream().map(ProductEntity::getName).toList());
+                .status(Status.toOrderDtoStatus(order.getStatus()))
+                .orderProducts(order.getProducts().stream().map(ProductEntity::getId).toList());
 
     }
 
-    default OrderEntity toEntity(OrderSaveRequestDto orderDto, OrderEntity orderEntity) {
+    default OrderEntity toEntity(StaffEntity manager, OrderSaveRequestDto orderDto, OrderEntity orderEntity) {
+        orderEntity.getStaff().add(manager);
         orderEntity.setAddress(String.format("%s, %s, %s", orderDto.getCity(), orderDto.getStreet(), orderDto.getHouse()));
         orderEntity.setDate(LocalDate.now());
         orderEntity.setStatus(Status.ACCEPTANCE);
@@ -51,18 +57,5 @@ public interface OrdersMapper {
                     dto.setQuantity(manual.getValue());
                     return dto;
                 }).toList();
-    }
-
-    default OrderStatusDto toDtoStatus(Status status){
-        return switch (status){
-            case COMPLETED -> OrderStatusDto.COMPLETED;
-            case DELIVERY -> OrderStatusDto.DELIVERY;
-            case PACKAGING -> OrderStatusDto.PACKAGING;
-            case ASSEMBLY -> OrderStatusDto.ASSEMBLY;
-            case PREPARATION -> OrderStatusDto.PREPARATION;
-            case ACCEPTED -> OrderStatusDto.ACCEPTED;
-            case CANCELED -> OrderStatusDto.CANCELED;
-            case ACCEPTANCE -> OrderStatusDto.ACCEPTANCE;
-        };
     }
 }

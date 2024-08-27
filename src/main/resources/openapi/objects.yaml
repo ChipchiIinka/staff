@@ -36,6 +36,35 @@ components:
       schema:
         $ref: '#/components/schemas/StorageId'
 
+    pageNumber:
+      name: pageNumber
+      in: query
+      required: true
+      description: Номер страницы
+      schema:
+        $ref: '#/components/schemas/PageNumber'
+    pageSize:
+      name: pageSize
+      in: query
+      required: true
+      description: Размер страницы
+      schema:
+        $ref: '#/components/schemas/PageSize'
+    sortingType:
+      name: sortingType
+      in: query
+      required: false
+      description: Тип сортировки
+      schema:
+        $ref: '#/components/schemas/SortingType'
+    sortingFieldName:
+      name: sortingFieldName
+      in: query
+      required: false
+      description: Поле по которому будет производиться сортировка
+      schema:
+        $ref: '#/components/schemas/SortingFieldName'
+
   schemas:
     StaffId:
       type: integer
@@ -132,10 +161,24 @@ components:
     ProductType:
       type: string
       description: Тип товара
+      enum:
+        - SINGLE_SEAT
+        - MULTIPLE_SEATS
+        - SLEEPING_OR_LYING
+        - ENTERTAINMENT
+        - TABLES
+        - STORAGE
+        - SETS
+        - DECORATION
+        - OTHER
     ProductPrice:
       type: number
       description: Цена товара
       format: double
+    ProductAllStoragesQuantity:
+      type: integer
+      description: Количество товара во всех складах
+      format: int64
 
     MaterialId:
       type: integer
@@ -150,6 +193,15 @@ components:
     MaterialType:
       type: string
       description: Тип материала
+      enum:
+        - WOOD
+        - BAMBOO
+        - METAL
+        - PLASTIC
+        - GLASS
+        - WOOL
+        - LEATHER
+        - OTHER
     MaterialLength:
       type: integer
       description: Длина материала
@@ -193,3 +245,19 @@ components:
     ProductQuantity:
       type: integer
       description: Количество товара на складе
+
+    PageNumber:
+      type: integer
+      default: 0
+    PageSize:
+      type: integer
+      default: 10
+
+    SortingType:
+      type: string
+      description: Тип сортировки
+      default: 'asc'
+    SortingFieldName:
+      type: string
+      description: Имя поля для сортировки
+      default: 'id'

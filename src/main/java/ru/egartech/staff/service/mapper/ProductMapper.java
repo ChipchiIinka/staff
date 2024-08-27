@@ -1,10 +1,11 @@
 package ru.egartech.staff.service.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.data.domain.Page;
 import ru.egartech.staff.entity.ProductEntity;
+import ru.egartech.staff.entity.enums.ProductType;
 import ru.egartech.staff.model.ManualSaveRequestDto;
 import ru.egartech.staff.model.ProductInfoResponseDto;
 import ru.egartech.staff.model.ProductListInfoResponseDto;
@@ -14,29 +15,36 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+@Mapper(componentModel="spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public interface ProductsMapper {
+public interface ProductMapper {
 
-    List<ProductListInfoResponseDto> toListDto(List<ProductEntity> products);
+    List<ProductListInfoResponseDto> toListDto(Page<ProductEntity> products);
 
     //Только для List<ProductListInfoResponseDto>
-    @Mapping(source = "price", target = "price", numberFormat = "#0.00")
-    ProductListInfoResponseDto toDto(ProductEntity product);
 
-    default ProductInfoResponseDto toDto(ProductEntity product, List<ManualSaveRequestDto> manual){
-        return new ProductInfoResponseDto().id(product.getId())
+    default ProductListInfoResponseDto toDto(ProductEntity product){
+        return new ProductListInfoResponseDto()
+                .name(product.getName())
+                .type(ProductType.toProductDtoType(product.getType()))
+                .price(product.getPrice().doubleValue());
+    }
+
+    default ProductInfoResponseDto toDto(ProductEntity product, List<ManualSaveRequestDto> manual, Long available){
+        return new ProductInfoResponseDto()
+                .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .type(product.getType())
+                .type(ProductType.toProductDtoType(product.getType()))
                 .price(product.getPrice().doubleValue())
-                .manual(manual);
+                .manual(manual)
+                .available(available);
     }
 
     default ProductEntity toEntity(ProductSaveRequestDto productDto, ProductEntity productEntity){
         productEntity.setName(productDto.getName());
         productEntity.setDescription(productDto.getDescription());
-        productEntity.setType(productDto.getType());
+        productEntity.setType(ProductType.toProductEntityType(productDto.getType()));
         productEntity.setPrice(BigDecimal.valueOf(productDto.getPrice()));
         return productEntity;
     }

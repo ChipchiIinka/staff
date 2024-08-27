@@ -1,8 +1,8 @@
 openapi: 3.0.3
 
 info:
-  title: API сервиса сотрудников
-  description: API сервиса сотрудников
+  title: API сервиса сотрудников - заказы
+  description: Работа с заказами
   version: 0.0.1
 
 tags:
@@ -17,15 +17,18 @@ paths:
       description: Получить список всех заказов
       tags:
         - Orders
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/pageNumber'
+        - $ref: '../objects.yaml#/components/parameters/pageSize'
+        - $ref: '../objects.yaml#/components/parameters/sortingType'
+        - $ref: '../objects.yaml#/components/parameters/sortingFieldName'
       responses:
         200:
           description: Данные были успешно получены
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OrderListInfoResponse'
+                $ref: '#/components/schemas/OrderInfoPagingResponse'
         400:
           $ref: '../service.yaml#/components/responses/BAD_REQUEST'
         401:
@@ -109,6 +112,27 @@ paths:
           $ref: '../service.yaml#/components/responses/NOT_FOUND'
         500:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    delete:
+      operationId: deleteOrderById
+      summary: Навсегда удалить запись заказа
+      description: Удалить заказ
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Информация успешно удалена
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
 
   /orders/{orderId}/restart:
     patch:
@@ -164,6 +188,16 @@ paths:
 components:
   schemas:
   #    Модели заказов
+    OrderInfoPagingResponse:
+      type: object
+      properties:
+        paging:
+          $ref: '../service.yaml#/components/schemas/Paging'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderListInfoResponse'
+
     OrderListInfoResponse:
       type: object
       description: Данные заказа в списке заказов
@@ -179,6 +213,8 @@ components:
       type: object
       description: Создание нового заказа
       properties:
+        manager_id:
+          $ref: '../objects.yaml#/components/schemas/StaffId'
         city:
           $ref: '../objects.yaml#/components/schemas/OrderCity'
         street:
@@ -205,7 +241,7 @@ components:
         order_products:
           type: array
           items:
-            $ref: '../objects.yaml#/components/schemas/ProductName'
+            $ref: '../objects.yaml#/components/schemas/ProductId'
 
     OrderMaterialInfoResponse:
       type: object

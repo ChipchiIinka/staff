@@ -13,6 +13,8 @@
                 CONSTRAINT product_storage_storages_fk FOREIGN KEY (storage_id) REFERENCES public.storages(id) ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT storage_products_fk FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE ON UPDATE CASCADE
             );
+            CREATE UNIQUE INDEX idx_product_storage_unique
+                ON public.products_storage (product_id, storage_id);
         </sql>
     </changeSet>
 </databaseChangeLog>

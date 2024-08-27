@@ -1,8 +1,8 @@
 openapi: 3.0.3
 
 info:
-  title: API сервиса сотрудников
-  description: API сервиса сотрудников
+  title: API сервиса сотрудников - товар
+  description: Справочник товаров сервиса
   version: 0.0.1
 
 tags:
@@ -17,15 +17,18 @@ paths:
       description: Получить список всех товаров
       tags:
         - Products
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/pageNumber'
+        - $ref: '../objects.yaml#/components/parameters/pageSize'
+        - $ref: '../objects.yaml#/components/parameters/sortingType'
+        - $ref: '../objects.yaml#/components/parameters/sortingFieldName'
       responses:
         200:
           description: Данные были успешно получены
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProductListInfoResponse'
+                $ref: '#/components/schemas/ProductInfoPagingResponse'
         400:
           $ref: '../service.yaml#/components/responses/BAD_REQUEST'
         401:
@@ -115,12 +118,43 @@ paths:
           $ref: '../service.yaml#/components/responses/NOT_FOUND'
         500:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+    delete:
+      operationId: deleteProductById
+      summary: Навсегда удалить запись товара
+      description: Удалить товар
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/productId'
+      tags:
+        - Products
+      responses:
+        200:
+          description: Информация успешно удалена
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
 
 
 
 components:
   schemas:
     #    Модели товаров
+    ProductInfoPagingResponse:
+      type: object
+      properties:
+        paging:
+          $ref: '../service.yaml#/components/schemas/Paging'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductListInfoResponse'
+
     ProductListInfoResponse:
       type: object
       description: Данные товара в списке товаров
@@ -167,6 +201,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ManualSaveRequest'
+        available:
+          $ref: '../objects.yaml#/components/schemas/ProductAllStoragesQuantity'
 
     #    Модели руководств
     ManualSaveRequest:
