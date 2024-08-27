@@ -1,7 +1,9 @@
 package ru.egartech.staff.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import ru.egartech.staff.entity.enums.ProductType;
 
 import java.math.BigDecimal;
 
@@ -17,11 +19,15 @@ public class ProductEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
+    @Column(length = 30)
     private String name;
 
+    @NotNull
     private String description;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private ProductType type;
 
     private BigDecimal price;
 }

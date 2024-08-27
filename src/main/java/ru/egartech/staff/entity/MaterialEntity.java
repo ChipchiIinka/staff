@@ -2,6 +2,7 @@ package ru.egartech.staff.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.egartech.staff.entity.enums.MaterialType;
 
 @Entity
 @Getter
@@ -25,5 +26,6 @@ public class MaterialEntity {
 
     private Integer height;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private MaterialType type;
 }

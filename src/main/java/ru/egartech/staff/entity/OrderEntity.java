@@ -24,10 +24,7 @@ public class OrderEntity {
 
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn
-    private StaffEntity manager;
-
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @ManyToMany

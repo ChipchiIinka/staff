@@ -12,10 +12,10 @@ components:
     Paging:
       type: object
       properties:
-        pageNumber:
-          type: integer
-        pageSize:
-          type: integer
+        page_number:
+          $ref: 'objects.yaml#/components/schemas/PageNumber'
+        page_size:
+          $ref: 'objects.yaml#/components/schemas/PageSize'
         count:
           type: integer
           format: int64
@@ -26,7 +26,7 @@ components:
       type: object
       description: Объект при возникновении ошибки
       properties:
-        trace_id:
+        code:
           type: string
           description: Уникальный идентификатор ошибки
         timestamp:

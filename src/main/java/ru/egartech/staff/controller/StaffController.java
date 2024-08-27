@@ -6,8 +6,6 @@ import ru.egartech.staff.api.StaffApi;
 import ru.egartech.staff.model.*;
 import ru.egartech.staff.service.StaffService;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class StaffController implements StaffApi {
@@ -20,8 +18,9 @@ public class StaffController implements StaffApi {
     }
 
     @Override
-    public List<StaffListInfoResponseDto> getAllStaff() {
-        return staffService.getAllStaff();
+    public StaffInfoPagingResponseDto getAllStaff(Integer pageNumber, Integer pageSize,
+                                                  String sortType, String sortFieldName) {
+        return staffService.getAllStaff(pageNumber, pageSize, sortType, sortFieldName);
     }
 
     @Override
