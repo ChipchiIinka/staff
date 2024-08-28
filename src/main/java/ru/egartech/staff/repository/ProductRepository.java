@@ -1,6 +1,5 @@
 package ru.egartech.staff.repository;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +19,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
             "WHERE p.id = :productId", nativeQuery = true)
     List<Object[]> findManualMapInfoMaterialQuantity(@Param("productId") Long productId);
 
-    @Transactional
     @Modifying
     @Query(value = "INSERT INTO manual (product_id, material_id, quantity) " +
             "VALUES (:productId, :materialId, :quantity)", nativeQuery = true)
@@ -28,7 +26,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
                     @Param("materialId") Long materialId,
                     @Param("quantity") Integer quantity);
 
-    @Transactional
     @Modifying
     @Query(value = "DELETE FROM manual WHERE product_id = :productId", nativeQuery = true)
     void deleteAllManualByProductId(@Param("productId") Long productId);

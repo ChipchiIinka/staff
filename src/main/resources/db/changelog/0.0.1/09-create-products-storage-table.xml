@@ -5,16 +5,34 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet id="create-products-storage-table" author="gizbrekht.md">
-        <sql>
-            CREATE TABLE public.products_storage (
-                product_id int8 NOT NULL,
-                available int4 DEFAULT 0 NOT NULL,
-                storage_id int8 NOT NULL,
-                CONSTRAINT product_storage_storages_fk FOREIGN KEY (storage_id) REFERENCES public.storages(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT storage_products_fk FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE ON UPDATE CASCADE
-            );
-            CREATE UNIQUE INDEX idx_product_storage_unique
-                ON public.products_storage (product_id, storage_id);
-        </sql>
+        <createTable tableName="products_storage" schemaName="public">
+            <column name="product_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="available" type="int4" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="products_storage"
+                baseColumnNames="storage_id"
+                referencedTableName="storages"
+                referencedColumnNames="id"
+                constraintName="product_storage_storages_fk"
+                onDelete="CASCADE" onUpdate="CASCADE"/>
+        <addForeignKeyConstraint
+                baseTableName="products_storage"
+                baseColumnNames="product_id"
+                referencedTableName="products"
+                referencedColumnNames="id"
+                constraintName="storage_products_fk"
+                onDelete="CASCADE" onUpdate="CASCADE"/>
+        <createIndex indexName="idx_product_storage_unique" tableName="products_storage" unique="true">
+            <column name="product_id"/>
+            <column name="storage_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

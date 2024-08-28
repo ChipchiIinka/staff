@@ -1,6 +1,5 @@
 package ru.egartech.staff.repository;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +12,6 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
-    @Transactional
     @Modifying(clearAutomatically = true)
     @Query(value = "INSERT INTO order_products (order_id, product_id) VALUES (:orderId, :productId)", nativeQuery = true)
     void addProductToOrderProducts(@Param("productId") Long productId, @Param("orderId") Long orderId);
