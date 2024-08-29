@@ -123,6 +123,6 @@ class ProductServiceTest {
 
         productService.deleteProductById(productId);
 
-        verify(productRepository, times(1)).deleteById(productId);
+        verify(productRepository, times(1)).deleteProductById(productId);
     }
 }
