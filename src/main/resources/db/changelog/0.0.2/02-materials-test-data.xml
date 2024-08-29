@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="materials-test-data" author="gizbrekht.md">
+        <!-- Доп данные для таблицы materials -->
+        <insert tableName="materials">
+            <column name="name" value="Доска дубовая"/>
+            <column name="description" value="Высококачественная дубовая доска"/>
+            <column name="length" value="200"/>
+            <column name="width" value="20"/>
+            <column name="height" value="2"/>
+            <column name="type" value="WOOD"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Бамбуковый лист"/>
+            <column name="description" value="Экологичный бамбуковый материал"/>
+            <column name="length" value="180"/>
+            <column name="width" value="30"/>
+            <column name="height" value="1"/>
+            <column name="type" value="BAMBOO"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Стальной лист"/>
+            <column name="description" value="Прочный стальной лист"/>
+            <column name="length" value="300"/>
+            <column name="width" value="50"/>
+            <column name="height" value="5"/>
+            <column name="type" value="METAL"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Пластиковая панель"/>
+            <column name="description" value="Универсальная пластиковая панель"/>
+            <column name="length" value="250"/>
+            <column name="width" value="25"/>
+            <column name="height" value="1"/>
+            <column name="type" value="PLASTIC"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Стеклянная пластина"/>
+            <column name="description" value="Прозрачная стеклянная пластина"/>
+            <column name="length" value="220"/>
+            <column name="width" value="20"/>
+            <column name="height" value="5"/>
+            <column name="type" value="GLASS"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Шерстяной рулон"/>
+            <column name="description" value="Мягкий шерстяной материал"/>
+            <column name="length" value="100"/>
+            <column name="width" value="10"/>
+            <column name="height" value="10"/>
+            <column name="type" value="WOOL"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Кожаный лист"/>
+            <column name="description" value="Натуральная кожа высшего качества"/>
+            <column name="length" value="150"/>
+            <column name="width" value="30"/>
+            <column name="height" value="1"/>
+            <column name="type" value="LEATHER"/>
+        </insert>
+        <insert tableName="materials">
+            <column name="name" value="Универсальный материал"/>
+            <column name="description" value="Материал для различных нужд"/>
+            <column name="length" value="200"/>
+            <column name="width" value="20"/>
+            <column name="height" value="2"/>
+            <column name="type" value="OTHER"/>
+        </insert>
+
+<!--        Материалы в складах-->
+        <insert tableName="materials_storage">
+            <column name="material_id" value="1"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="50"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="1"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="30"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="2"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="40"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="2"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="60"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="3"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="25"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="4"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="35"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="5"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="12"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="6"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="34"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="7"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="42"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="7"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="3"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="8"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="54"/>
+        </insert>
+        <insert tableName="materials_storage">
+            <column name="material_id" value="8"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="67"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

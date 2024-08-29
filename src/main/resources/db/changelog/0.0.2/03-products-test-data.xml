@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="products-test-data" author="gizbrekht.md">
+        <insert tableName="products">
+            <column name="name" value="Дубовый стол"/>
+            <column name="description" value="Прочный стол из дуба для гостиной"/>
+            <column name="type" value="TABLES"/>
+            <column name="price" value="15000"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Бамбуковая лампа"/>
+            <column name="description" value="Элегантная лампа из бамбука для интерьера"/>
+            <column name="type" value="DECORATION"/>
+            <column name="price" value="4500"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Стальная дверь"/>
+            <column name="description" value="Надежная дверь из стали с декоративными элементами"/>
+            <column name="type" value="OTHER"/>
+            <column name="price" value="25000"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Пластиковый контейнер"/>
+            <column name="description" value="Универсальный контейнер для хранения вещей"/>
+            <column name="type" value="STORAGE"/>
+            <column name="price" value="1200"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Стеклянный столик"/>
+            <column name="description" value="Современный столик с прозрачной стеклянной поверхностью"/>
+            <column name="type" value="TABLES"/>
+            <column name="price" value="8000"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Шерстяной плед"/>
+            <column name="description" value="Мягкий и теплый плед из натуральной шерсти"/>
+            <column name="type" value="SLEEPING_OR_LYING"/>
+            <column name="price" value="3000"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Кожаный диван"/>
+            <column name="description" value="Роскошный диван из натуральной кожи"/>
+            <column name="type" value="MULTIPLE_SEATS"/>
+            <column name="price" value="45000"/>
+        </insert>
+        <insert tableName="products">
+            <column name="name" value="Универсальный шкаф"/>
+            <column name="description" value="Многофункциональный шкаф для хранения вещей"/>
+            <column name="type" value="STORAGE"/>
+            <column name="price" value="20000"/>
+        </insert>
+
+        <!--Руководства на продукты(manual), количества нужных материалов-->
+        <!-- Дубовый стол -->
+        <insert tableName="manual">
+            <column name="product_id" value="1"/>
+            <column name="material_id" value="1"/> <!-- Доска дубовая -->
+            <column name="quantity" value="10"/>
+        </insert>
+        <!-- Бамбуковая лампа -->
+        <insert tableName="manual">
+            <column name="product_id" value="2"/>
+            <column name="material_id" value="2"/> <!-- Бамбуковый лист -->
+            <column name="quantity" value="5"/>
+        </insert>
+        <!-- Стальная дверь -->
+        <insert tableName="manual">
+            <column name="product_id" value="3"/>
+            <column name="material_id" value="3"/> <!-- Стальной лист -->
+            <column name="quantity" value="8"/>
+        </insert>
+        <!-- Пластиковый контейнер -->
+        <insert tableName="manual">
+            <column name="product_id" value="4"/>
+            <column name="material_id" value="4"/> <!-- Пластиковая панель -->
+            <column name="quantity" value="6"/>
+        </insert>
+        <!-- Стеклянный столик -->
+        <insert tableName="manual">
+            <column name="product_id" value="5"/>
+            <column name="material_id" value="5"/> <!-- Стеклянная пластина -->
+            <column name="quantity" value="4"/>
+        </insert>
+        <!-- Шерстяной плед -->
+        <insert tableName="manual">
+            <column name="product_id" value="6"/>
+            <column name="material_id" value="6"/> <!-- Шерстяной рулон -->
+            <column name="quantity" value="3"/>
+        </insert>
+        <!-- Кожаный диван -->
+        <insert tableName="manual">
+            <column name="product_id" value="7"/>
+            <column name="material_id" value="7"/> <!-- Кожаный лист -->
+            <column name="quantity" value="12"/>
+        </insert>
+        <insert tableName="manual">
+            <column name="product_id" value="7"/>
+            <column name="material_id" value="1"/> <!-- Кожаный лист -->
+            <column name="quantity" value="6"/>
+        </insert>
+        <!-- Универсальный шкаф -->
+        <insert tableName="manual">
+            <column name="product_id" value="8"/>
+            <column name="material_id" value="1"/> <!-- Доска дубовая -->
+            <column name="quantity" value="15"/>
+        </insert>
+        <insert tableName="manual">
+            <column name="product_id" value="8"/>
+            <column name="material_id" value="4"/> <!-- Пластиковая панель -->
+            <column name="quantity" value="5"/>
+        </insert>
+
+        <!--добавление в склады-->
+        <!-- Дубовый стол -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="1"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="20"/>
+        </insert>
+        <insert tableName="products_storage">
+            <column name="product_id" value="1"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="10"/>
+        </insert>
+        <!-- Бамбуковая лампа -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="2"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="15"/>
+        </insert>
+        <!-- Стальная дверь -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="3"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="5"/>
+        </insert>
+        <!-- Пластиковый контейнер -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="4"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="50"/>
+        </insert>
+        <!-- Стеклянный столик -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="5"/>
+            <column name="storage_id" value="2"/>
+            <column name="available" value="12"/>
+        </insert>
+        <!-- Шерстяной плед -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="6"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="25"/>
+        </insert>
+        <!-- Универсальный шкаф -->
+        <insert tableName="products_storage">
+            <column name="product_id" value="8"/>
+            <column name="storage_id" value="1"/>
+            <column name="available" value="10"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
