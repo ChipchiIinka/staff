@@ -5,16 +5,33 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet id="create-materials-storage-table" author="gizbrekht.md">
-        <sql>
-            CREATE TABLE public.materials_storage (
-                material_id int8 NOT NULL,
-                available int4 DEFAULT 0 NOT NULL,
-                storage_id int8 NOT NULL,
-                CONSTRAINT materials_storage_materials_fk FOREIGN KEY (material_id) REFERENCES public.materials(id) ON DELETE CASCADE ON UPDATE CASCADE,
-                CONSTRAINT materials_storage_storages_fk FOREIGN KEY (storage_id) REFERENCES public.storages(id)
-            );
-            CREATE UNIQUE INDEX idx_material_storage_unique
-                ON public.materials_storage (material_id, storage_id);
-        </sql>
+        <createTable tableName="materials_storage" schemaName="public">
+            <column name="material_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="available" type="int4" defaultValueNumeric="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableName="materials_storage"
+                baseColumnNames="material_id"
+                referencedTableName="materials"
+                referencedColumnNames="id"
+                constraintName="materials_storage_materials_fk"
+                onDelete="CASCADE" onUpdate="CASCADE"/>
+        <addForeignKeyConstraint
+                baseTableName="materials_storage"
+                baseColumnNames="storage_id"
+                referencedTableName="storages"
+                referencedColumnNames="id"
+                constraintName="materials_storage_storages_fk"/>
+        <createIndex indexName="idx_material_storage_unique" tableName="materials_storage" unique="true">
+            <column name="material_id"/>
+            <column name="storage_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

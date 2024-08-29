@@ -5,13 +5,27 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet id="create-order-products-table" author="gizbrekht.md">
-        <sql>
-            CREATE TABLE public.order_products (
-                order_id int8 NOT NULL,
-                product_id int8 NOT NULL,
-                CONSTRAINT order_products_orders_fk FOREIGN KEY (order_id) REFERENCES public.orders(id) ON UPDATE CASCADE,
-                CONSTRAINT order_products_products_fk FOREIGN KEY (product_id) REFERENCES public.products(id)
-            );
-        </sql>
+        <createTable tableName="order_products" schemaName="public">
+            <column name="order_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="product_id" type="int8">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseColumnNames="order_id"
+                baseTableName="order_products"
+                referencedColumnNames="id"
+                referencedTableName="orders"
+                onUpdate="CASCADE"
+                constraintName="order_products_orders_fk"/>
+        <addForeignKeyConstraint
+                baseColumnNames="product_id"
+                baseTableName="order_products"
+                referencedColumnNames="id"
+                referencedTableName="products"
+
+                constraintName="order_products_products_fk"/>
     </changeSet>
 </databaseChangeLog>

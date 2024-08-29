@@ -22,7 +22,6 @@ public interface ProductMapper {
     List<ProductListInfoResponseDto> toListDto(Page<ProductEntity> products);
 
     //Только для List<ProductListInfoResponseDto>
-
     default ProductListInfoResponseDto toDto(ProductEntity product){
         return new ProductListInfoResponseDto()
                 .name(product.getName())
