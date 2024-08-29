@@ -29,15 +29,15 @@ public class OrderEntity {
 
     @ManyToMany
     @JoinTable(name = "staff_projects",
-         joinColumns = @JoinColumn(name = "staff_id"),
-         inverseJoinColumns = @JoinColumn(name = "order_id"))
+         joinColumns = @JoinColumn(name = "order_id"),
+         inverseJoinColumns = @JoinColumn(name = "staff_id"))
     @ToString.Exclude
     private List<StaffEntity> staff;
 
     @ManyToMany
     @JoinTable(name = "order_products",
-        joinColumns = @JoinColumn(name = "product_id"),
-        inverseJoinColumns = @JoinColumn(name = "order_id"))
+        joinColumns = @JoinColumn(name = "order_id"),
+        inverseJoinColumns = @JoinColumn(name = "product_id"))
     @ToString.Exclude
     private List<ProductEntity> products;
 }

@@ -158,7 +158,7 @@ class OrderServiceTest {
     @Test
     void testOrderToPreparationStatus() {
         Long orderId = 1L;
-        orderEntity.setStatus(Status.ACCEPTANCE);
+        orderEntity.setStatus(Status.PACKAGING);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
 
@@ -172,7 +172,7 @@ class OrderServiceTest {
     @Test
     void testOrderToPreparationStatusInvalidStatus() {
         Long orderId = 1L;
-        orderEntity.setStatus(Status.DELIVERY);
+        orderEntity.setStatus(Status.ACCEPTANCE);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
 

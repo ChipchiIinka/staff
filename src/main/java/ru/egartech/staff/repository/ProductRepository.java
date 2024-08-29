@@ -1,5 +1,6 @@
 package ru.egartech.staff.repository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,10 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     @Modifying
     @Query(value = "DELETE FROM manual WHERE product_id = :productId", nativeQuery = true)
     void deleteAllManualByProductId(@Param("productId") Long productId);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM manual WHERE product_id = :productId;" +
+            " DELETE FROM products WHERE id = :productId", nativeQuery = true)
+    void deleteProductById(@Param("productId") Long productId);
 }

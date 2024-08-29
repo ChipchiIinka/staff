@@ -42,7 +42,7 @@ public interface OrderMapper {
     }
 
     default OrderEntity toEntity(StaffEntity manager, OrderSaveRequestDto orderDto, OrderEntity orderEntity) {
-        orderEntity.getStaff().add(manager);
+        orderEntity.setStaff(List.of(manager));
         orderEntity.setAddress(String.format("%s, %s, %s", orderDto.getCity(), orderDto.getStreet(), orderDto.getHouse()));
         orderEntity.setDate(LocalDate.now());
         orderEntity.setStatus(Status.ACCEPTANCE);

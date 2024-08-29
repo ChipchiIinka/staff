@@ -138,7 +138,7 @@ class StorageServiceTest {
 
         storageService.deleteStorageById(storageId);
 
-        verify(storageRepository, times(1)).deleteById(storageId);
+        verify(storageRepository, times(1)).deleteStorageById(storageId);
     }
 
     // Тесты для методов getProductMapInfo и getMaterialMapInfo

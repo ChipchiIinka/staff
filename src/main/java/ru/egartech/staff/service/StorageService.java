@@ -103,7 +103,8 @@ public class StorageService {
         storageRepository.save(storageMapper.toEntity(storageSaveRequestDto, storageEntity));
     }
 
+    @Transactional
     public void deleteStorageById(Long storageId) {
-        storageRepository.deleteById(storageId);
+        storageRepository.deleteStorageById(storageId);
     }
 }

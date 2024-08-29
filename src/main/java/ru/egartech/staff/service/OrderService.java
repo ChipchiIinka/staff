@@ -97,10 +97,9 @@ public class OrderService {
     public void orderToPreparationStatus(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ с таким id не найден"));
-        if (order.getStatus().equals(Status.ACCEPTANCE) ||
-                order.getStatus().equals(Status.ACCEPTED) ||
-                order.getStatus().equals(Status.PREPARATION) ||
-                order.getStatus().equals(Status.CANCELED)) {
+        if (order.getStatus().equals(Status.ASSEMBLY) ||
+                order.getStatus().equals(Status.PACKAGING) ||
+                order.getStatus().equals(Status.DELIVERY)) {
             order.setStatus(Status.PREPARATION);
             orderRepository.save(order);
         } else throw new StaffException(ErrorType.CLIENT_ERROR, "Нельзя перезапустить заказ с этого состояния");

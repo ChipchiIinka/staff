@@ -86,8 +86,9 @@ public class ProductService {
         return manualMap;
     }
 
+    @Transactional
     public void deleteProductById(Long productId) {
-        productRepository.deleteById(productId);
+        productRepository.deleteProductById(productId);
     }
 }
 
