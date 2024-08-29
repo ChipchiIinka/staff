@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="staff-test-data" author="gizbrekht.md">
+        <insert tableName="orders">
+            <column name="address" value="г. Санкт-Петербург, ул. Кутузова, д. 6 кв 12"/>
+            <column name="date" value="2024-08-12"/>
+            <column name="status" value="COMPLETED"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="1"/>
+            <column name="product_id" value="1"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="1"/>
+            <column name="product_id" value="6"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="1"/>
+            <column name="product_id" value="7"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="1"/>
+            <column name="staff_id" value="2"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="1"/>
+            <column name="staff_id" value="3"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="1"/>
+            <column name="staff_id" value="4"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="1"/>
+            <column name="staff_id" value="5"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="1"/>
+            <column name="staff_id" value="6"/>
+        </insert>
+
+        <insert tableName="orders">
+            <column name="address" value="г. Москва, ул. Станичная, д. 12 кв 23"/>
+            <column name="date" value="2024-08-20"/>
+            <column name="status" value="DELIVERY"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="2"/>
+            <column name="product_id" value="3"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="2"/>
+            <column name="staff_id" value="2"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="2"/>
+            <column name="staff_id" value="3"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="2"/>
+            <column name="staff_id" value="4"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="2"/>
+            <column name="staff_id" value="5"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="2"/>
+            <column name="staff_id" value="6"/>
+        </insert>
+
+        <insert tableName="orders">
+            <column name="address" value="г. Москва, ул. Московская, д. 11 кв 22"/>
+            <column name="date" value="2024-08-23"/>
+            <column name="status" value="ASSEMBLY"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="3"/>
+            <column name="product_id" value="7"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="3"/>
+            <column name="staff_id" value="2"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="3"/>
+            <column name="staff_id" value="3"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="3"/>
+            <column name="staff_id" value="5"/>
+        </insert>
+
+        <insert tableName="orders">
+            <column name="address" value="г. Санкт-Петербург, ул. Суворова, д. 2 кв 11"/>
+            <column name="date" value="2024-08-26"/>
+            <column name="status" value="PREPARATION"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="4"/>
+            <column name="product_id" value="5"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="4"/>
+            <column name="staff_id" value="2"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="4"/>
+            <column name="staff_id" value="3"/>
+        </insert>
+
+        <insert tableName="orders">
+            <column name="address" value="г. Санкт-Петербург, ул. Андреева, д. 32 кв 56"/>
+            <column name="date" value="2024-08-30"/>
+            <column name="status" value="ACCEPTED"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="5"/>
+            <column name="product_id" value="1"/>
+        </insert>
+        <insert tableName="order_products">
+            <column name="order_id" value="5"/>
+            <column name="product_id" value="2"/>
+        </insert>
+        <insert tableName="staff_projects">
+            <column name="order_id" value="5"/>
+            <column name="staff_id" value="2"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

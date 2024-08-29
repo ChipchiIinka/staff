@@ -5,6 +5,5 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <includeAll path="0.0.1" relativeToChangelogFile="true"/>
-    <includeAll path="0.0.2" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

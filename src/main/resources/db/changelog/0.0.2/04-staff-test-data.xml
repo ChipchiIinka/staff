@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="staff-test-data" author="gizbrekht.md">
+        <!-- Директор -->
+        <insert tableName="staff">
+            <column name="login" value="director001"/>
+            <column name="password" value="directorPass123"/>
+            <column name="email" value="director@example.com"/>
+            <column name="phone_number" value="+79991112233"/>
+            <column name="is_deleted" value="false"/>
+            <column name="role" value="ADMIN"/>
+            <column name="position" value="DIRECTOR"/>
+            <column name="full_name" value="Иванов Иван Иванович"/>
+        </insert>
+
+        <!-- Менеджер -->
+        <insert tableName="staff">
+            <column name="login" value="Mariager001"/>
+            <column name="password" value="mangrPass123"/>
+            <column name="email" value="mariger14@example.com"/>
+            <column name="phone_number" value="+79991112234"/>
+            <column name="is_deleted" value="false"/>
+            <column name="role" value="USER"/>
+            <column name="position" value="MANAGER"/>
+            <column name="full_name" value="Петрова Мария Александровна"/>
+        </insert>
+
+        <!-- Кладовщик -->
+        <insert tableName="staff">
+            <column name="login" value="SergeWarehouse001"/>
+            <column name="password" value="warehousePass123"/>
+            <column name="email" value="serg12@example.com"/>
+            <column name="phone_number" value="+79991112235"/>
+            <column name="is_deleted" value="false"/>
+            <column name="role" value="USER"/>
+            <column name="position" value="WAREHOUSEMAN"/>
+            <column name="full_name" value="Сидоров Сергей Васильевич"/>
+        </insert>
+
+        <!-- Агент по закупкам -->
+        <insert tableName="staff">
+            <column name="login" value="annatheagent001"/>
+            <column name="password" value="agtPass123"/>
+            <column name="email" value="agentAnn@example.com"/>
+            <column name="phone_number" value="+79991112236"/>
+            <column name="is_deleted" value="false"/>
+            <column name="role" value="USER"/>
+            <column name="position" value="PURCHASING_AGENT"/>
+            <column name="full_name" value="Кузнецова Анна Олеговна"/>
+        </insert>
+
+        <!-- Сборщик -->
+        <insert tableName="staff">
+            <column name="login" value="constNik001"/>
+            <column name="password" value="packconsNikPass123"/>
+            <column name="email" value="nik.sm@example.com"/>
+            <column name="phone_number" value="+79991112237"/>
+            <column name="is_deleted" value="false"/>
+            <column name="role" value="USER"/>
+            <column name="position" value="CONSTRUCTOR"/>
+            <column name="full_name" value="Смирнов Николай Викторович"/>
+        </insert>
+
+        <!-- Курьер -->
+        <insert tableName="staff">
+            <column name="login" value="courierAlex001"/>
+            <column name="password" value="courMPass123"/>
+            <column name="email" value="alexmich@example.com"/>
+            <column name="phone_number" value="+79991112238"/>
+            <column name="is_deleted" value="false"/>
+            <column name="role" value="USER"/>
+            <column name="position" value="COURIER"/>
+            <column name="full_name" value="Михайлов Алексей Семенович"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
