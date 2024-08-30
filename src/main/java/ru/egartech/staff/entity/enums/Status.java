@@ -2,7 +2,6 @@ package ru.egartech.staff.entity.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import ru.egartech.staff.entity.OrderEntity;
 import ru.egartech.staff.model.OrderStatusDto;
 
 @Getter
@@ -10,12 +9,12 @@ import ru.egartech.staff.model.OrderStatusDto;
 public enum Status {
     COMPLETED("Завершен"),
     DELIVERY("Доставка"),
+    WAITING_FOR_DELIVERY("Ожидание доставки"),
     PACKAGING("Упаковка"),
     ASSEMBLY("Сборка"),
     PREPARATION("Подготовка"),
     ACCEPTED("Принят"),
-    CANCELED("Отменен"),
-    ACCEPTANCE("Принимается");
+    CANCELED("Отменен");
 
     private final String value;
 
@@ -23,12 +22,12 @@ public enum Status {
         return switch (status){
             case COMPLETED -> OrderStatusDto.COMPLETED;
             case DELIVERY -> OrderStatusDto.DELIVERY;
+            case WAITING_FOR_DELIVERY -> OrderStatusDto.WAITING_FOR_DELIVERY;
             case PACKAGING -> OrderStatusDto.PACKAGING;
             case ASSEMBLY -> OrderStatusDto.ASSEMBLY;
             case PREPARATION -> OrderStatusDto.PREPARATION;
             case ACCEPTED -> OrderStatusDto.ACCEPTED;
             case CANCELED -> OrderStatusDto.CANCELED;
-            case ACCEPTANCE -> OrderStatusDto.ACCEPTANCE;
         };
     }
 }

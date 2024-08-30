@@ -138,12 +138,12 @@ components:
       enum:
         - COMPLETED
         - DELIVERY
+        - WAITING_FOR_DELIVERY
         - PACKAGING
         - ASSEMBLY
         - PREPARATION
         - ACCEPTED
         - CANCELED
-        - ACCEPTANCE
     OrderAddress:
       type: string
       description: Полный адрес заказа

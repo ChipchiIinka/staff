@@ -25,5 +25,9 @@
                 referencedTableName="staff"
                 referencedColumnNames="id"
                 onUpdate="CASCADE" />
+        <createIndex indexName="idx_staff_projects_unique" tableName="staff_projects" unique="true">
+            <column name="staff_id"/>
+            <column name="order_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

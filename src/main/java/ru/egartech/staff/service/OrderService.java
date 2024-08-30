@@ -87,9 +87,11 @@ public class OrderService {
         productList.forEach(productId -> orderRepository.addProductToOrderProducts(productId, orderId));
     }
 
-    public void orderToNextStatus(Long orderId) {
+    @Transactional
+    public void orderToNextStatus(Long orderId, Long staffId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ не найден"));
+        orderRepository.addToOrderStaff(orderId, staffId);
         toNextStatus(order);
         orderRepository.save(order);
     }
@@ -99,6 +101,7 @@ public class OrderService {
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ с таким id не найден"));
         if (order.getStatus().equals(Status.ASSEMBLY) ||
                 order.getStatus().equals(Status.PACKAGING) ||
+                order.getStatus().equals(Status.WAITING_FOR_DELIVERY) ||
                 order.getStatus().equals(Status.DELIVERY)) {
             order.setStatus(Status.PREPARATION);
             orderRepository.save(order);
@@ -112,11 +115,11 @@ public class OrderService {
     private void toNextStatus(OrderEntity order){
         Status status = order.getStatus();
         switch (status){
-            case ACCEPTANCE -> order.setStatus(Status.ACCEPTED);
             case ACCEPTED -> order.setStatus(Status.PREPARATION);
             case PREPARATION -> order.setStatus(Status.ASSEMBLY);
             case ASSEMBLY -> order.setStatus(Status.PACKAGING);
-            case PACKAGING -> order.setStatus(Status.DELIVERY);
+            case PACKAGING -> order.setStatus(Status.WAITING_FOR_DELIVERY);
+            case WAITING_FOR_DELIVERY -> order.setStatus(Status.DELIVERY);
             case DELIVERY -> order.setStatus(Status.COMPLETED);
             default -> order.setStatus(Status.CANCELED);
         }

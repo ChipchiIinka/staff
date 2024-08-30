@@ -37,7 +37,8 @@ public interface OrderMapper {
                 .address(order.getAddress())
                 .date(order.getDate())
                 .status(Status.toOrderDtoStatus(order.getStatus()))
-                .orderProducts(order.getProducts().stream().map(ProductEntity::getId).toList());
+                .orderProducts(order.getProducts().stream().map(ProductEntity::getId).toList())
+                .orderStaff(order.getStaff().stream().map(StaffEntity::getId).toList());
 
     }
 
@@ -45,7 +46,7 @@ public interface OrderMapper {
         orderEntity.setStaff(List.of(manager));
         orderEntity.setAddress(String.format("%s, %s, %s", orderDto.getCity(), orderDto.getStreet(), orderDto.getHouse()));
         orderEntity.setDate(LocalDate.now());
-        orderEntity.setStatus(Status.ACCEPTANCE);
+        orderEntity.setStatus(Status.ACCEPTED);
         return orderEntity;
     }
 
