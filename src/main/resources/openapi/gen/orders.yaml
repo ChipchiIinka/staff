@@ -91,27 +91,6 @@ paths:
           $ref: '../service.yaml#/components/responses/NOT_FOUND'
         500:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
-    patch:
-      operationId: updateOrderStatus
-      summary: Изменить статус заказа по идентификатору
-      description: Изменить статус заказа на следующий
-      parameters:
-        - $ref: '../objects.yaml#/components/parameters/orderId'
-      tags:
-        - Orders
-      responses:
-        200:
-          description: Данные были успешно обновлены
-        400:
-          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
-        401:
-          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
-        403:
-          $ref: '../service.yaml#/components/responses/FORBIDDEN'
-        404:
-          $ref: '../service.yaml#/components/responses/NOT_FOUND'
-        500:
-          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
     delete:
       operationId: deleteOrderById
       summary: Навсегда удалить запись заказа
@@ -123,6 +102,30 @@ paths:
       responses:
         200:
           description: Информация успешно удалена
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+
+  /orders/{orderId}/{staffId}:
+    patch:
+      operationId: updateOrderStatus
+      summary: Изменить статус заказа по идентификатору
+      description: Изменить статус заказа на следующий
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+        - $ref: '../objects.yaml#/components/parameters/staffId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно обновлены
         400:
           $ref: '../service.yaml#/components/responses/BAD_REQUEST'
         401:
@@ -242,6 +245,10 @@ components:
           type: array
           items:
             $ref: '../objects.yaml#/components/schemas/ProductId'
+        order_staff:
+          type: array
+          items:
+            $ref: '../objects.yaml#/components/schemas/StaffId'
 
     OrderMaterialInfoResponse:
       type: object

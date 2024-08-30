@@ -46,8 +46,8 @@ class OrderMapperTest {
         assertEquals("Город N, ул.Уличная, 2", result.get(1).getAddress());
         assertEquals(LocalDate.now(), result.get(0).getDate());
         assertEquals(LocalDate.now(), result.get(1).getDate());
-        assertEquals(OrderStatusDto.ACCEPTANCE, result.get(0).getStatus());
-        assertEquals(OrderStatusDto.ACCEPTANCE, result.get(1).getStatus());
+        assertEquals(OrderStatusDto.ACCEPTED, result.get(0).getStatus());
+        assertEquals(OrderStatusDto.ACCEPTED, result.get(1).getStatus());
     }
 
     @Test
@@ -57,7 +57,7 @@ class OrderMapperTest {
         OrderListInfoResponseDto result = orderMapper.toDto(orderEntity1);
 
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
-        assertEquals(OrderStatusDto.ACCEPTANCE, result.getStatus());
+        assertEquals(OrderStatusDto.ACCEPTED, result.getStatus());
         assertEquals(LocalDate.now(), result.getDate());
     }
 
@@ -69,7 +69,8 @@ class OrderMapperTest {
 
         assertEquals(1L, result.getId());
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
-        assertEquals(OrderStatusDto.ACCEPTANCE, result.getStatus());
+        assertEquals(OrderStatusDto.ACCEPTED, result.getStatus());
+        assertEquals(List.of(1L, 2L), result.getOrderProducts());
         assertEquals(List.of(1L, 2L), result.getOrderProducts());
         assertEquals(LocalDate.now(), result.getDate());
     }
@@ -92,7 +93,7 @@ class OrderMapperTest {
 
         assertNotNull(result);
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
-        assertEquals(Status.ACCEPTANCE, result.getStatus());
+        assertEquals(Status.ACCEPTED, result.getStatus());
         assertEquals(LocalDate.now(), result.getDate());
     }
 
@@ -125,7 +126,7 @@ class OrderMapperTest {
         OrderEntity order = new OrderEntity();
         order.setId(id);
         order.setAddress("Город N, ул.Уличная, " + id);
-        order.setStatus(Status.ACCEPTANCE);
+        order.setStatus(Status.ACCEPTED);
         order.setDate(LocalDate.now());
         order.setProducts(products);
         order.setStaff(staff);
