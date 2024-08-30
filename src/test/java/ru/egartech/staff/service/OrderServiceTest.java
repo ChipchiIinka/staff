@@ -144,13 +144,16 @@ class OrderServiceTest {
     @Test
     void testOrderToNextStatus() {
         Long orderId = 1L;
-        orderEntity.setStatus(Status.ACCEPTANCE);
+        orderEntity.setStatus(Status.ACCEPTED);
+
+        Long staffId = 1L;
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
 
-        orderService.orderToNextStatus(orderId);
+        orderService.orderToNextStatus(orderId,staffId);
 
-        assertEquals(Status.ACCEPTED, orderEntity.getStatus());
+        assertEquals(Status.PREPARATION, orderEntity.getStatus());
+        verify(orderRepository, times(1)).addToOrderStaff(orderId, staffId);
         verify(orderRepository, times(1)).findById(orderId);
         verify(orderRepository, times(1)).save(orderEntity);
     }
@@ -172,7 +175,7 @@ class OrderServiceTest {
     @Test
     void testOrderToPreparationStatusInvalidStatus() {
         Long orderId = 1L;
-        orderEntity.setStatus(Status.ACCEPTANCE);
+        orderEntity.setStatus(Status.ACCEPTED);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
 

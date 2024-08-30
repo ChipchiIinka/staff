@@ -14,7 +14,7 @@
             <column name="date" type="TIMESTAMP">
                 <constraints nullable="false" />
             </column>
-            <column name="status" type="VARCHAR(17)">
+            <column name="status" type="VARCHAR(20)">
                 <constraints nullable="false" />
             </column>
         </createTable>

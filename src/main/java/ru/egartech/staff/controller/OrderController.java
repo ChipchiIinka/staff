@@ -37,8 +37,8 @@ public class OrderController implements OrdersApi {
     }
 
     @Override
-    public void updateOrderStatus(Long orderId) {
-        orderService.orderToNextStatus(orderId);
+    public void updateOrderStatus(Long orderId, Long staffId) {
+        orderService.orderToNextStatus(orderId, staffId);
     }
 
     @Override

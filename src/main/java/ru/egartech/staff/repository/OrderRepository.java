@@ -16,7 +16,10 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     @Query(value = "INSERT INTO order_products (order_id, product_id) VALUES (:orderId, :productId)", nativeQuery = true)
     void addProductToOrderProducts(@Param("productId") Long productId, @Param("orderId") Long orderId);
 
-    @Modifying
     @Query(value = "SELECT product_id FROM order_products WHERE order_id = :orderId", nativeQuery = true)
     List<Long> findOrderProducts(@Param("orderId") Long orderId);
+
+    @Modifying
+    @Query(value = "INSERT INTO staff_projects (order_id, staff_id) VALUES (:orderId, :staffId) ON CONFLICT DO NOTHING", nativeQuery = true)
+    void addToOrderStaff(@Param("orderId") Long orderId, @Param("staffId") Long staffId);
 }
