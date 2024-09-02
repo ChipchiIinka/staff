@@ -8,12 +8,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.enums.ProductType;
+import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.model.*;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -60,7 +59,7 @@ class ProductMapperTest {
         ProductEntity productEntity = createProductEntity(1L);
         Long available = 100L;
 
-        List<ManualSaveRequestDto> manualSaveRequestDtoList = List.of(createManual(1L), createManual(2L));
+        List<ManualDto> manualSaveRequestDtoList = List.of(createManual(1L), createManual(2L));
 
         ProductInfoResponseDto result = productMapper.toDto(productEntity, manualSaveRequestDtoList, available);
 
@@ -95,11 +94,30 @@ class ProductMapperTest {
 
     @Test
     void testToManualSaveRequestDto() {
-        Map<Long, Integer> manual = new HashMap<>();
-        manual.put(1L, 12);
-        manual.put(2L, 22);
+        ManualProjection manualProjection1 = new ManualProjection() {
+            @Override
+            public Long getMaterial() {
+                return 1L;
+            }
 
-        List<ManualSaveRequestDto> result = productMapper.toManualSaveRequestDto(manual);
+            @Override
+            public Integer getQuantity() {
+                return 12;
+            }
+        };
+        ManualProjection manualProjection2 = new ManualProjection() {
+            @Override
+            public Long getMaterial() {
+                return 2L;
+            }
+
+            @Override
+            public Integer getQuantity() {
+                return 22;
+            }
+        };
+
+        List<ManualDto> result = productMapper.toManualDto(List.of(manualProjection1, manualProjection2));
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -119,8 +137,8 @@ class ProductMapperTest {
         return productEntity;
     }
 
-    private static ManualSaveRequestDto createManual(Long id) {
-        return new ManualSaveRequestDto()
+    private static ManualDto createManual(Long id) {
+        return new ManualDto()
                 .material(id)
                 .quantity(id.intValue() * 10);
     }

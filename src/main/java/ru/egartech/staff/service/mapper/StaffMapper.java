@@ -1,74 +1,62 @@
 package ru.egartech.staff.service.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 import ru.egartech.staff.entity.StaffEntity;
-import ru.egartech.staff.entity.enums.Position;
-import ru.egartech.staff.entity.enums.Role;
 import ru.egartech.staff.model.*;
 
 import java.util.List;
 
 @Mapper(componentModel="spring",nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface StaffMapper {
+
+    String DEFAULT_STAFF_ENUMS_PACKAGE = "ru.egartech.staff.entity.enums.";
 
     List<StaffListInfoResponseDto> toListDto(Page<StaffEntity> staff);
 
     //Только для List<StaffListInfoResponseDto>
-    default StaffListInfoResponseDto toDto(StaffEntity staff) {
-        return new StaffListInfoResponseDto()
-                .fullName(staff.getFullName())
-                .position(Position.toPositionDto(staff.getPosition()));
-    }
+    @Mapping(target = "position", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Position.toPositionDto(staff.getPosition()))")
+    StaffListInfoResponseDto toDto(StaffEntity staff);
 
-    default StaffAdminInfoResponseDto toAdminInfoDto(StaffEntity staff){
-        return new StaffAdminInfoResponseDto()
-                .id(staff.getId())
-                .firstName(staff.getFullName().split(" ")[1])
-                .secondName(staff.getFullName().split(" ")[0])
-                .lastName(staff.getFullName().split(" ")[2])
-                .login(staff.getLogin())
-                .email(staff.getEmail())
-                .isDeleted(staff.isDeleted())
-                .role(Role.toRoleDto(staff.getRole()))
-                .position(Position.toPositionDto(staff.getPosition()));
-    }
+    @Mapping(target = "secondName", expression = "java(staff.getFullName().split(\" \")[0])")
+    @Mapping(target = "firstName", expression = "java(staff.getFullName().split(\" \")[1])")
+    @Mapping(target = "lastName", expression = "java(staff.getFullName().split(\" \")[2])")
+    @Mapping(target = "role", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Role.toRoleDto(staff.getRole()))")
+    @Mapping(target = "position", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Position.toPositionDto(staff.getPosition()))")
+    @Mapping(target = "isDeleted", source = "deleted")
+    StaffAdminInfoResponseDto toAdminInfoDto(StaffEntity staff);
 
-    default StaffInfoResponseDto toInfoDto(StaffEntity staff){
-        return new StaffInfoResponseDto()
-                .firstName(staff.getFullName().split(" ")[1])
-                .secondName(staff.getFullName().split(" ")[0])
-                .lastName(staff.getFullName().split(" ")[2])
-                .login(staff.getLogin())
-                .email(staff.getEmail())
-                .position(Position.toPositionDto(staff.getPosition()));
-    }
+    @Mapping(target = "secondName", expression = "java(staff.getFullName().split(\" \")[0])")
+    @Mapping(target = "firstName", expression = "java(staff.getFullName().split(\" \")[1])")
+    @Mapping(target = "lastName", expression = "java(staff.getFullName().split(\" \")[2])")
+    @Mapping(target = "position", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Position.toPositionDto(staff.getPosition()))")
+    StaffInfoResponseDto toInfoDto(StaffEntity staff);
 
-    default StaffEntity toEntity(StaffSaveRequestDto requestDto, StaffEntity staffEntity){
-        staffEntity.setFullName(String.format("%s %s %s", requestDto.getSecondName(), requestDto.getFirstName(), requestDto.getLastName()));
-        staffEntity.setLogin(requestDto.getLogin());
-        staffEntity.setEmail(requestDto.getEmail());
-        staffEntity.setPassword(requestDto.getPassword());
-        staffEntity.setPhoneNumber(requestDto.getPhoneNumber());
-        staffEntity.setRole(Role.toRoleEntity(requestDto.getRole()));
-        staffEntity.setPosition(Position.toPositionEntity(requestDto.getPosition()));
-        staffEntity.setDeleted(false);
-        return staffEntity;
-    }
+    @Mapping(target = "fullName",
+            expression = "java(toFullName(requestDto.getSecondName(), requestDto.getFirstName(), requestDto.getLastName()))")
+    @Mapping(target = "role", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Role.toRoleEntity(requestDto.getRole()))")
+    @Mapping(target = "position", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Position.toPositionEntity(requestDto.getPosition()))")
+    @Mapping(target = "deleted", expression = "java(false)")
+    StaffEntity toEntity(StaffSaveRequestDto requestDto, @MappingTarget StaffEntity staffEntity);
 
-    default StaffEntity toCardUpdate(StaffUpdateRequestDto requestDto, StaffEntity staffEntity){
-        staffEntity.setFullName(String.format("%s %s %s",
-                requestDto.getSecondName(), requestDto.getFirstName(), requestDto.getLastName()));
-        staffEntity.setPassword(requestDto.getPassword());
-        return staffEntity;
-    }
+    @Mapping(target = "fullName",
+            expression = "java(toFullName(requestDto.getSecondName(), requestDto.getFirstName(), requestDto.getLastName()))")
+    StaffEntity toCardUpdate(StaffUpdateRequestDto requestDto, @MappingTarget StaffEntity staffEntity);
 
-    default StaffEntity toPositionChange(StaffChangePositionRequestDto requestDto, StaffEntity staffEntity){
-        staffEntity.setRole(Role.toRoleEntity(requestDto.getRole()));
-        staffEntity.setPosition(Position.toPositionEntity(requestDto.getPosition()));
-        return staffEntity;
+    @Mapping(target = "role", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Role.toRoleEntity(requestDto.getRole()))")
+    @Mapping(target = "position", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "Position.toPositionEntity(requestDto.getPosition()))")
+    StaffEntity toPositionChange(StaffChangePositionRequestDto requestDto, @MappingTarget StaffEntity staffEntity);
+
+    default String toFullName(String secondName, String firstName, String lastName){
+        return String.format("%s %s %s", secondName, firstName, lastName);
     }
 }

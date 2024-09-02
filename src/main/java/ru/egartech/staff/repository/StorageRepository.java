@@ -5,8 +5,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import ru.egartech.staff.entity.StorageEntity;
+import ru.egartech.staff.entity.projection.MaterialStorageProjection;
+import ru.egartech.staff.entity.projection.ProductStorageProjection;
 
 import java.util.List;
 
@@ -21,15 +22,15 @@ public interface StorageRepository extends JpaRepository<StorageEntity, Long> {
     @Query(value = "SELECT SUM(ps.available) FROM products_storage ps WHERE ps.product_id = :productId", nativeQuery = true)
     Long findAvailableByProductId(@Param("productId") Long productId);
 
-    @Query(value = "SELECT ps.product_id, ps.available " +
+    @Query(value = "SELECT ps.product_id as productId, ps.available as available " +
             "FROM products_storage AS ps " +
             "WHERE ps.storage_id = :storageId", nativeQuery = true)
-    List<Object[]> findAllProductsByStorageId(@Param("storageId") Long storageId);
+    List<ProductStorageProjection> findAllProductsByStorageId(@Param("storageId") Long storageId);
 
-    @Query(value = "SELECT ms.material_id, ms.available " +
+    @Query(value = "SELECT ms.material_id as materialId, ms.available as available " +
             "FROM materials_storage AS ms " +
             "WHERE ms.storage_id = :storageId", nativeQuery = true)
-    List<Object[]> findAllMaterialsByStorageId(@Param("storageId") Long storageId);
+    List<MaterialStorageProjection> findAllMaterialsByStorageId(@Param("storageId") Long storageId);
 
     @Modifying
     @Query(value = "INSERT INTO materials_storage(material_id, available, storage_id) " +
@@ -48,14 +49,4 @@ public interface StorageRepository extends JpaRepository<StorageEntity, Long> {
     void addProductToStorage(@Param("storageId") Long storageId,
                              @Param("productId") Long productId,
                              @Param("available") Integer available);
-
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM products_storage " +
-            "WHERE storage_id = :storageId;" +
-            "DELETE FROM materials_storage " +
-            "WHERE storage_id = :storageId;" +
-            "DELETE FROM storages " +
-            "WHERE id = :storageId",nativeQuery = true)
-    void deleteStorageById(@Param("storageId") Long storageId);
 }

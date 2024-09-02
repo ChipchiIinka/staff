@@ -14,9 +14,7 @@ import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StorageRepository;
 import ru.egartech.staff.service.mapper.ProductMapper;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -42,20 +40,21 @@ public class ProductService {
                 .content(productMapper.toListDto(productEntities));
     }
 
+    @Transactional
     public ProductInfoResponseDto getProductById(Long productId) {
         Long availableQuantity = storageRepository.findAvailableByProductId(productId);
-        List<ManualSaveRequestDto> manual = productMapper.toManualSaveRequestDto(getManualMapInfo(productId));
+        List<ManualDto> manual = productMapper.toManualDto(productRepository.findProductManualProjection(productId));
         return productMapper.toDto(productRepository.findById(productId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден")), manual, availableQuantity);
     }
 
     @Transactional
     public void createProduct(ProductSaveRequestDto productDto) {
-        List<ManualSaveRequestDto> manuals = productDto.getManual();
+        List<ManualDto> manuals = productDto.getManual();
         ProductEntity productEntity = new ProductEntity();
         Long productId = productRepository.save(productMapper.toEntity(productDto, productEntity)).getId();
         if(!manuals.isEmpty()){
-            for(ManualSaveRequestDto manual : manuals){
+            for(ManualDto manual : manuals){
                 productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity());
             }
         }
@@ -63,32 +62,21 @@ public class ProductService {
 
     @Transactional
     public void updateProduct(Long productId, ProductSaveRequestDto productDto) {
-        List<ManualSaveRequestDto> manuals = productDto.getManual();
+        List<ManualDto> manuals = productDto.getManual();
         ProductEntity productEntity = productRepository.findById(productId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден"));
         productRepository.save(productMapper.toEntity(productDto, productEntity));
         if(!manuals.isEmpty()){
             productRepository.deleteAllManualByProductId(productId);
-            for(ManualSaveRequestDto manual : manuals){
+            for(ManualDto manual : manuals){
                 productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity());
             }
         }
     }
 
-    public Map<Long, Integer> getManualMapInfo(Long productId) {
-        List<Object[]> results = productRepository.findManualMapInfoMaterialQuantity(productId);
-        Map<Long, Integer> manualMap = new HashMap<>();
-        for (Object[] result : results) {
-            Long materialId = (Long) result[0];
-            Integer quantity = (Integer) result[1];
-            manualMap.put(materialId, quantity);
-        }
-        return manualMap;
-    }
-
     @Transactional
     public void deleteProductById(Long productId) {
-        productRepository.deleteProductById(productId);
+        productRepository.deleteById(productId);
     }
 }
 

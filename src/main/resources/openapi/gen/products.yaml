@@ -140,8 +140,6 @@ paths:
         500:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
 
-
-
 components:
   schemas:
     #    Модели товаров
@@ -181,7 +179,7 @@ components:
         manual:
           type: array
           items:
-            $ref: '#/components/schemas/ManualSaveRequest'
+            $ref: '../objects.yaml#/components/schemas/Manual'
 
     ProductInfoResponse:
       type: object
@@ -200,17 +198,7 @@ components:
         manual:
           type: array
           items:
-            $ref: '#/components/schemas/ManualSaveRequest'
+            $ref: '../objects.yaml#/components/schemas/Manual'
         available:
           $ref: '../objects.yaml#/components/schemas/ProductAllStoragesQuantity'
-
-    #    Модели руководств
-    ManualSaveRequest:
-      type: object
-      description: Данные руководства по сборке товара
-      properties:
-        material:
-          $ref: '../objects.yaml#/components/schemas/MaterialId'
-        quantity:
-          $ref: '../objects.yaml#/components/schemas/ManualQuantity'
 

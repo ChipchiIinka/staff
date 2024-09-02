@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.egartech.staff.entity.StaffEntity;
 import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
@@ -61,10 +62,12 @@ public class StaffService {
         staffRepository.save(staffMapper.toPositionChange(staffChangePositionRequestDto, staffEntity));
     }
 
+    @Transactional
     public void banStaffById(Long staffId) {
         staffRepository.markAsBanned(staffId);
     }
 
+    @Transactional
     public void unbanStaffById(Long staffId) {
         staffRepository.markAsUnbanned(staffId);
     }

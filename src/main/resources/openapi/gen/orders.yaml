@@ -259,13 +259,4 @@ components:
         needed_materials:
           type: array
           items:
-            $ref: '#/components/schemas/ManualInfoResponse'
-
-    ManualInfoResponse:
-      type: object
-      description: Нужные материалы для товара
-      properties:
-        id:
-          $ref: '../objects.yaml#/components/schemas/MaterialId'
-        quantity:
-          $ref: '../objects.yaml#/components/schemas/ManualQuantity'
+            $ref: '../objects.yaml#/components/schemas/Manual'
