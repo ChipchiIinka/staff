@@ -21,13 +21,13 @@
                 referencedTableName="materials"
                 referencedColumnNames="id"
                 constraintName="manual_materials_fk"
-                onUpdate="CASCADE"/>
+                onDelete="CASCADE" onUpdate="CASCADE"/>
         <addForeignKeyConstraint
                 baseTableName="manual"
                 baseColumnNames="product_id"
                 referencedTableName="products"
                 referencedColumnNames="id"
                 constraintName="manual_products_fk"
-                onUpdate="CASCADE"/>
+                onDelete="CASCADE" onUpdate="CASCADE"/>
     </changeSet>
 </databaseChangeLog>

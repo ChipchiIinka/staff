@@ -211,39 +211,11 @@ components:
         products:
           type: array
           items:
-            $ref: '#/components/schemas/ProductStorageResponse'
+            $ref: '#/components/schemas/ProductStorageInfo'
         materials:
           type: array
           items:
-            $ref: '#/components/schemas/MaterialStorageResponse'
-
-    ProductStorageResponse:
-      type: object
-      description: Продукты на складе
-      properties:
-        id:
-          $ref: '../objects.yaml#/components/schemas/ProductId'
-        name:
-          $ref: '../objects.yaml#/components/schemas/ProductName'
-        type:
-          $ref: '../objects.yaml#/components/schemas/ProductType'
-        quantity:
-          $ref: '../objects.yaml#/components/schemas/ProductQuantity'
-
-    MaterialStorageResponse:
-      type: object
-      description: Материалы на складе
-      properties:
-        id:
-          $ref: '../objects.yaml#/components/schemas/MaterialId'
-        name:
-          $ref: '../objects.yaml#/components/schemas/MaterialName'
-        type:
-          $ref: '../objects.yaml#/components/schemas/MaterialType'
-        short_info:
-          $ref: '../objects.yaml#/components/schemas/MaterialShortInfo'
-        quantity:
-          $ref: '../objects.yaml#/components/schemas/ManualQuantity'
+            $ref: '#/components/schemas/MaterialStorageInfo'
 
     StorageUpdateItemsRequest:
       type: object

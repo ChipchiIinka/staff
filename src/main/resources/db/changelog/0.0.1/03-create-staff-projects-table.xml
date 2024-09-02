@@ -17,14 +17,15 @@
                 baseColumnNames="order_id"
                 constraintName="staff_projects_orders_fk"
                 referencedTableName="orders"
-                referencedColumnNames="id" />
+                referencedColumnNames="id"
+                onDelete="CASCADE" onUpdate="CASCADE"/>
         <addForeignKeyConstraint
                 baseTableName="staff_projects"
                 baseColumnNames="staff_id"
                 constraintName="staff_projects_users_fk"
                 referencedTableName="staff"
                 referencedColumnNames="id"
-                onUpdate="CASCADE" />
+                onDelete="CASCADE" onUpdate="CASCADE" />
         <createIndex indexName="idx_staff_projects_unique" tableName="staff_projects" unique="true">
             <column name="staff_id"/>
             <column name="order_id"/>

@@ -7,6 +7,8 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.egartech.staff.entity.StorageEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -32,10 +34,9 @@ class StorageRepositoryTest {
         StorageEntity storageEntity = new StorageEntity();
         storageEntity.setAddress("Test Storage Address");
         StorageEntity savedEntity = storageRepository.save(storageEntity);
-
+        assertNotNull(storageRepository.findById(savedEntity.getId()));
         storageRepository.deleteById(savedEntity.getId());
-        StorageEntity foundEntity = storageRepository.findById(savedEntity.getId()).orElse(null);
 
-        assertThat(foundEntity).isNull();
+        assertNull(storageRepository.findById(savedEntity.getId()).orElse(null));
     }
 }

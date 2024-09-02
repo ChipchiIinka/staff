@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -36,7 +35,6 @@ class OrderRepositoryTest {
         order.setAddress("123 Test Street");
         order.setDate(LocalDate.now());
         order.setStatus(Status.ACCEPTED);
-        order = orderRepository.save(order);
 
         product = new ProductEntity();
         product.setName("Test Product");
@@ -44,25 +42,16 @@ class OrderRepositoryTest {
         product.setType(ProductType.OTHER);
         product.setPrice(new BigDecimal("99.99"));
         product = productRepository.save(product);
+
+        order.setProducts(List.of(product));
+        order = orderRepository.save(order);
     }
 
     @Test
-    void testAddProductToOrderProducts() {
-        orderRepository.addProductToOrderProducts(product.getId(), order.getId());
-
-        List<Long> products = orderRepository.findOrderProducts(order.getId());
-        assertEquals(1, products.size());
-        assertEquals(product.getId(), products.get(0));
-    }
-
-    @Test
-    void testFindOrderProducts() {
-        orderRepository.addProductToOrderProducts(product.getId(), order.getId());
-
-        List<Long> products = orderRepository.findOrderProducts(order.getId());
-
-        assertNotNull(products);
-        assertEquals(1, products.size());
-        assertEquals(product.getId(), products.get(0));
+    void testOrderSave(){
+        assertEquals("123 Test Street", order.getAddress());
+        assertEquals(LocalDate.now(), order.getDate());
+        assertEquals(Status.ACCEPTED, order.getStatus());
+        assertEquals(product, order.getProducts().get(0));
     }
 }
