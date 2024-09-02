@@ -1,11 +1,8 @@
 package ru.egartech.staff.service.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 import ru.egartech.staff.entity.MaterialEntity;
-import ru.egartech.staff.entity.enums.MaterialType;
 import ru.egartech.staff.model.MaterialInfoResponseDto;
 import ru.egartech.staff.model.MaterialListInfoResponseDto;
 import ru.egartech.staff.model.MaterialSaveRequestDto;
@@ -13,28 +10,26 @@ import ru.egartech.staff.model.MaterialSaveRequestDto;
 import java.util.List;
 
 @Mapper(componentModel="spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MaterialMapper {
+    String DEFAULT_STAFF_ENUMS_PACKAGE = "ru.egartech.staff.entity.enums.";
 
     List<MaterialListInfoResponseDto> toListDto(Page<MaterialEntity> materials);
 
-    default MaterialListInfoResponseDto toDto(MaterialEntity material){
-        return new MaterialListInfoResponseDto()
-                .name(material.getName())
-                .type(MaterialType.toMaterialDtoType(material.getType()))
-                .shortInfo(String.format("%d / %d / %d",
-                        material.getLength(), material.getWidth(), material.getHeight()));
-    }
+    @Mapping(target = "shortInfo", expression = "java(buildShortInfo(material))")
+    @Mapping(target = "type", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "MaterialType.toMaterialDtoType(material.getType()))")
+    MaterialListInfoResponseDto toDto(MaterialEntity material);
 
+    @Mapping(target = "type", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "MaterialType.toMaterialDtoType(material.getType()))")
     MaterialInfoResponseDto toDto(MaterialEntity material, Long available);
 
-    default MaterialEntity toEntity(MaterialSaveRequestDto materialDto, MaterialEntity material){
-        material.setName(materialDto.getName());
-        material.setDescription(materialDto.getDescription());
-        material.setType(MaterialType.toMaterialEntityType(materialDto.getType()));
-        material.setLength(materialDto.getLength());
-        material.setWidth(materialDto.getWidth());
-        material.setHeight(materialDto.getHeight());
-        return material;
+    @Mapping(target = "type", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "MaterialType.toMaterialEntityType(materialDto.getType()))")
+    MaterialEntity toEntity(MaterialSaveRequestDto materialDto, @MappingTarget MaterialEntity material);
+
+    default String buildShortInfo(MaterialEntity material){
+        return String.format("%d / %d / %d", material.getLength(), material.getWidth(), material.getHeight());
     }
 }

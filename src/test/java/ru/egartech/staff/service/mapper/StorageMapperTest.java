@@ -6,17 +6,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import ru.egartech.staff.entity.MaterialEntity;
-import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.StorageEntity;
-import ru.egartech.staff.entity.enums.MaterialType;
-import ru.egartech.staff.entity.enums.ProductType;
+import ru.egartech.staff.entity.projection.MaterialStorageProjection;
+import ru.egartech.staff.entity.projection.ProductStorageProjection;
 import ru.egartech.staff.model.*;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -74,30 +69,41 @@ class StorageMapperTest {
 
     @Test
     void testToProductStorageListDto() {
-        Map<ProductEntity, Integer> productEntityIntegerMap = new HashMap<>();
-        productEntityIntegerMap.put(getProductEntity(1L), 10);
+        ProductStorageProjection storageProjection = new ProductStorageProjection() {
+            @Override
+            public Long getProductId() {
+                return 1L;
+            }
+            @Override
+            public Integer getAvailable() {
+                return 10;
+            }
+        };
 
-        List<ProductStorageResponseDto> result = storageMapper.toProductStorageListDto(productEntityIntegerMap);
+        List<ProductStorageInfoDto> result = storageMapper.toProductStorageListDto(List.of(storageProjection));
 
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getId());
-        assertEquals("Товар 1", result.get(0).getName());
-        assertEquals(ProductTypeDto.OTHER, result.get(0).getType());
         assertEquals(10, result.get(0).getQuantity());
     }
 
     @Test
     void testToMaterialStorageListDto() {
-        Map<MaterialEntity, Integer> materialEntityIntegerMap = new HashMap<>();
-        materialEntityIntegerMap.put(getMaterialEntity(1L), 11);
+        MaterialStorageProjection storageProjection = new MaterialStorageProjection() {
+            @Override
+            public Long getMaterialId() {
+                return 1L;
+            }
+            @Override
+            public Integer getAvailable() {
+                return 11;
+            }
+        };
 
-        List<MaterialStorageResponseDto> result = storageMapper.toMaterialStorageListDto(materialEntityIntegerMap);
+        List<MaterialStorageInfoDto> result = storageMapper.toMaterialStorageListDto(List.of(storageProjection));
 
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getId());
-        assertEquals("Материал 1", result.get(0).getName());
-        assertEquals(MaterialTypeDto.OTHER, result.get(0).getType());
-        assertEquals("10 / 20 / 30", result.get(0).getShortInfo());
         assertEquals(11, result.get(0).getQuantity());
     }
 
@@ -106,27 +112,5 @@ class StorageMapperTest {
         storageEntity.setId(id);
         storageEntity.setAddress("Город N, ул.Уличная, " + id);
         return storageEntity;
-    }
-
-    private static ProductEntity getProductEntity(Long productId) {
-        ProductEntity product = new ProductEntity();
-        product.setId(productId);
-        product.setName("Товар " + productId);
-        product.setDescription("Описание товара " + product);
-        product.setPrice(BigDecimal.valueOf(productId * 100));
-        product.setType(ProductType.OTHER);
-        return product;
-    }
-
-    private static MaterialEntity getMaterialEntity(Long materialId) {
-        MaterialEntity material = new MaterialEntity();
-        material.setId(materialId);
-        material.setName("Материал " + materialId);
-        material.setDescription("Описание материала " + material);
-        material.setLength((int) (materialId * 10));
-        material.setWidth((int) (materialId * 20));
-        material.setHeight((int) (materialId * 30));
-        material.setType(MaterialType.OTHER);
-        return material;
     }
 }

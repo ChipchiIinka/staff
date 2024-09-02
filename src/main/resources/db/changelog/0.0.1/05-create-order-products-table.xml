@@ -17,14 +17,14 @@
                 baseTableName="order_products"
                 referencedColumnNames="id"
                 referencedTableName="orders"
-                onUpdate="CASCADE"
+                onDelete="CASCADE" onUpdate="CASCADE"
                 constraintName="order_products_orders_fk"/>
         <addForeignKeyConstraint
                 baseColumnNames="product_id"
                 baseTableName="order_products"
                 referencedColumnNames="id"
                 referencedTableName="products"
-
+                onDelete="CASCADE" onUpdate="CASCADE"
                 constraintName="order_products_products_fk"/>
     </changeSet>
 </databaseChangeLog>

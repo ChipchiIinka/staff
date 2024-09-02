@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
@@ -36,6 +37,7 @@ public class MaterialService {
                 .content(materialMapper.toListDto(materialEntities));
     }
 
+    @Transactional
     public MaterialInfoResponseDto getMaterialById(Long materialId) {
         Long availableQuantity = storageRepository.findAvailableByMaterialId(materialId);
         MaterialEntity material = materialRepository.findById(materialId)

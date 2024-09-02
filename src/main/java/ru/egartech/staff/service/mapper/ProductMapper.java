@@ -1,62 +1,45 @@
 package ru.egartech.staff.service.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 import ru.egartech.staff.entity.ProductEntity;
-import ru.egartech.staff.entity.enums.ProductType;
-import ru.egartech.staff.model.ManualSaveRequestDto;
+import ru.egartech.staff.entity.projection.ManualProjection;
+import ru.egartech.staff.model.ManualDto;
 import ru.egartech.staff.model.ProductInfoResponseDto;
 import ru.egartech.staff.model.ProductListInfoResponseDto;
 import ru.egartech.staff.model.ProductSaveRequestDto;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Mapper(componentModel="spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProductMapper {
+
+    String DEFAULT_STAFF_ENUMS_PACKAGE = "ru.egartech.staff.entity.enums.";
 
     List<ProductListInfoResponseDto> toListDto(Page<ProductEntity> products);
 
     //Только для List<ProductListInfoResponseDto>
-    default ProductListInfoResponseDto toDto(ProductEntity product){
-        return new ProductListInfoResponseDto()
-                .name(product.getName())
-                .type(ProductType.toProductDtoType(product.getType()))
-                .price(product.getPrice().doubleValue());
-    }
+    @Mapping(target = "type", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "ProductType.toProductDtoType(product.getType()))")
+    @Mapping(target = "price", expression = "java(product.getPrice().doubleValue())")
+    ProductListInfoResponseDto toDto(ProductEntity product);
 
-    default ProductInfoResponseDto toDto(ProductEntity product, List<ManualSaveRequestDto> manual, Long available){
-        return new ProductInfoResponseDto()
-                .id(product.getId())
-                .name(product.getName())
-                .description(product.getDescription())
-                .type(ProductType.toProductDtoType(product.getType()))
-                .price(product.getPrice().doubleValue())
-                .manual(manual)
-                .available(available);
-    }
+    @Mapping(target = "type", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "ProductType.toProductDtoType(product.getType()))")
+    @Mapping(target = "price", expression = "java(product.getPrice().doubleValue())")
+    ProductInfoResponseDto toDto(ProductEntity product, List<ManualDto> manual, Long available);
 
-    default ProductEntity toEntity(ProductSaveRequestDto productDto, ProductEntity productEntity){
-        productEntity.setName(productDto.getName());
-        productEntity.setDescription(productDto.getDescription());
-        productEntity.setType(ProductType.toProductEntityType(productDto.getType()));
-        productEntity.setPrice(BigDecimal.valueOf(productDto.getPrice()));
-        return productEntity;
-    }
+    @Mapping(target = "type", expression = "java(" + DEFAULT_STAFF_ENUMS_PACKAGE +
+            "ProductType.toProductEntityType(productDto.getType()))")
+    @Mapping(target = "price", expression = "java(java.math.BigDecimal.valueOf(productDto.getPrice()))")
+    ProductEntity toEntity(ProductSaveRequestDto productDto, @MappingTarget ProductEntity productEntity);
 
-    default List<ManualSaveRequestDto> toManualSaveRequestDto(Map<Long, Integer> manualFromDB) {
-        return manualFromDB.entrySet()
-                .stream()
-                .map(entry -> {
-                    ManualSaveRequestDto dto = new ManualSaveRequestDto();
-                    dto.setMaterial(entry.getKey());
-                    dto.setQuantity(entry.getValue());
-                    return dto;
-                })
+    default List<ManualDto> toManualDto(List<ManualProjection> manualProjection){
+        return manualProjection.stream()
+                .map(projection -> new ManualDto()
+                        .material(projection.getMaterial())
+                        .quantity(projection.getQuantity()))
                 .toList();
     }
 }

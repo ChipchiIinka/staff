@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import ru.egartech.staff.entity.ProductEntity;
+import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.model.*;
 import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StorageRepository;
@@ -76,11 +77,13 @@ class ProductServiceTest {
         productEntity.setName("Test Product");
 
         Long availableQuantity = 100L;
-        List<ManualSaveRequestDto> manualDtos = List.of(new ManualSaveRequestDto());
+        List<ManualProjection> manualProjections = List.of();
+        List<ManualDto> manualDtos = List.of(new ManualDto());
+
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
         when(storageRepository.findAvailableByProductId(productId)).thenReturn(availableQuantity);
-        when(productMapper.toManualSaveRequestDto(anyMap())).thenReturn(manualDtos);
+        when(productMapper.toManualDto(manualProjections)).thenReturn(manualDtos);
         when(productMapper.toDto(productEntity, manualDtos, availableQuantity)).thenReturn(productInfoResponseDto);
 
         ProductInfoResponseDto actualDto = productService.getProductById(productId);
@@ -90,7 +93,7 @@ class ProductServiceTest {
 
     @Test
     void testCreateProduct() {
-        productSaveRequestDto.setManual(List.of(new ManualSaveRequestDto()));
+        productSaveRequestDto.setManual(List.of(new ManualDto()));
 
         when(productMapper.toEntity(productSaveRequestDto, productEntity)).thenReturn(productEntity);
         when(productRepository.save(productEntity)).thenReturn(productEntity);
@@ -105,7 +108,7 @@ class ProductServiceTest {
     @Test
     void testUpdateProduct() {
         Long productId = 1L;
-        productSaveRequestDto.setManual(List.of(new ManualSaveRequestDto()));
+        productSaveRequestDto.setManual(List.of(new ManualDto()));
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
         when(productMapper.toEntity(productSaveRequestDto, productEntity)).thenReturn(productEntity);
@@ -123,6 +126,6 @@ class ProductServiceTest {
 
         productService.deleteProductById(productId);
 
-        verify(productRepository, times(1)).deleteProductById(productId);
+        verify(productRepository, times(1)).deleteById(productId);
     }
 }

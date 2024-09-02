@@ -13,14 +13,13 @@ import ru.egartech.staff.entity.enums.Position;
 import ru.egartech.staff.entity.enums.ProductType;
 import ru.egartech.staff.entity.enums.Role;
 import ru.egartech.staff.entity.enums.Status;
+import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -83,13 +82,14 @@ class OrderMapperTest {
         requestDto.setHouse(String.valueOf(1L));
         requestDto.setOrderProducts(List.of(1L, 2L, 3L));
 
-        StaffEntity staffEntity = getStaffEntity(0);
+        List<StaffEntity> staffList = List.of(getStaffEntity(0));
+        List<ProductEntity> productList = List.of(getProductEntity(0));
 
         OrderEntity result = new OrderEntity();
         result.setId(1L);
         result.setStaff(new ArrayList<>());
 
-        orderMapper.toEntity(staffEntity, requestDto, result);
+        orderMapper.toEntity(staffList, requestDto, result, productList);
 
         assertNotNull(result);
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
@@ -99,18 +99,34 @@ class OrderMapperTest {
 
     @Test
     void testToManualInfoDto(){
-        Map<Long, Integer> map = new HashMap<>();
-        map.put(1L, 2);
-        map.put(2L, 12);
-        map.put(3L, 10);
+        ManualProjection manualProjection1 = new ManualProjection() {
+            @Override
+            public Long getMaterial() {
+                return 1L;
+            }
 
-        List<ManualInfoResponseDto> result = orderMapper.toManualInfoDto(map);
-        assertEquals(1L, result.get(0).getId());
+            @Override
+            public Integer getQuantity() {
+                return 2;
+            }
+        };
+        ManualProjection manualProjection2 = new ManualProjection() {
+            @Override
+            public Long getMaterial() {
+                return 2L;
+            }
+
+            @Override
+            public Integer getQuantity() {
+                return 12;
+            }
+        };
+
+        List<ManualDto> result = orderMapper.toManualDto(List.of(manualProjection1, manualProjection2));
+        assertEquals(1L, result.get(0).getMaterial());
         assertEquals(2, result.get(0).getQuantity());
-        assertEquals(2L, result.get(1).getId());
+        assertEquals(2L, result.get(1).getMaterial());
         assertEquals(12, result.get(1).getQuantity());
-        assertEquals(3L, result.get(2).getId());
-        assertEquals(10, result.get(2).getQuantity());
     }
 
 

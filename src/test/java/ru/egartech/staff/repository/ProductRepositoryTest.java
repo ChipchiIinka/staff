@@ -9,9 +9,11 @@ import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.enums.MaterialType;
 import ru.egartech.staff.entity.enums.ProductType;
+import ru.egartech.staff.entity.projection.ManualProjection;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,26 +53,26 @@ class ProductRepositoryTest {
     void testSaveManual() {
         productRepository.saveManual(product.getId(), material.getId(), 10);
 
-        List<Object[]> manualMapInfo = productRepository.findManualMapInfoMaterialQuantity(product.getId());
-        assertEquals(1, manualMapInfo.size());
+        List<ManualProjection> manualProjections = productRepository.findProductManualProjection(product.getId());
+        assertEquals(1, manualProjections.size());
 
-        Object[] manualEntry = manualMapInfo.get(0);
-        assertEquals(material.getId(), manualEntry[0]);
-        assertEquals(10, manualEntry[1]);
+        ManualProjection manualProjection = manualProjections.get(0);
+        assertEquals(material.getId(), manualProjection.getMaterial());
+        assertEquals(10, manualProjection.getQuantity());
     }
 
     @Test
     void testFindManualMapInfoMaterialQuantity() {
         productRepository.saveManual(product.getId(), material.getId(), 10);
 
-        List<Object[]> manualMapInfo = productRepository.findManualMapInfoMaterialQuantity(product.getId());
+        List<ManualProjection> manualProjection = productRepository.findProductManualProjection(product.getId());
 
-        assertNotNull(manualMapInfo);
-        assertEquals(1, manualMapInfo.size());
+        assertNotNull(manualProjection);
+        assertEquals(1, manualProjection.size());
 
-        Object[] manualEntry = manualMapInfo.get(0);
-        assertEquals(material.getId(), manualEntry[0]);
-        assertEquals(10, manualEntry[1]);
+        ManualProjection manualProjection1 = manualProjection.get(0);
+        assertEquals(material.getId(), manualProjection1.getMaterial());
+        assertEquals(10, manualProjection1.getQuantity());
     }
 
     @Test
@@ -79,7 +81,22 @@ class ProductRepositoryTest {
 
         productRepository.deleteAllManualByProductId(product.getId());
 
-        List<Object[]> manualMapInfo = productRepository.findManualMapInfoMaterialQuantity(product.getId());
-        assertTrue(manualMapInfo.isEmpty());
+        List<ManualProjection> manualProjection = productRepository.findProductManualProjection(product.getId());
+        assertTrue(manualProjection.isEmpty());
+    }
+
+    @Test
+    void testDeleteById() {
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setName("Test Product");
+        productEntity.setDescription("Test Description");
+        productEntity.setType(ProductType.OTHER);
+        productEntity.setPrice(new BigDecimal("99.99"));
+        productEntity = productRepository.save(productEntity);
+
+        assertEquals(Optional.of(productEntity), productRepository.findById(productEntity.getId()));
+        productRepository.deleteById(productEntity.getId());
+
+        assertEquals(Optional.empty(), productRepository.findById(productEntity.getId()));
     }
 }

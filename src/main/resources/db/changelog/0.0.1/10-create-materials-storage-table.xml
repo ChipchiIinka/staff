@@ -27,7 +27,8 @@
                 baseColumnNames="storage_id"
                 referencedTableName="storages"
                 referencedColumnNames="id"
-                constraintName="materials_storage_storages_fk"/>
+                constraintName="materials_storage_storages_fk"
+                onDelete="CASCADE" onUpdate="CASCADE"/>
         <createIndex indexName="idx_material_storage_unique" tableName="materials_storage" unique="true">
             <column name="material_id"/>
             <column name="storage_id"/>

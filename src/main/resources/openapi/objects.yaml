@@ -261,3 +261,13 @@ components:
       type: string
       description: Имя поля для сортировки
       default: 'id'
+
+    #    Модель руководств
+    Manual:
+      type: object
+      description: Данные руководства по сборке товара
+      properties:
+        material:
+          $ref: '#/components/schemas/MaterialId'
+        quantity:
+          $ref: '#/components/schemas/ManualQuantity'

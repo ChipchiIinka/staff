@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import ru.egartech.staff.model.OrderStatusDto;
 
+import java.util.List;
+
 @Getter
 @RequiredArgsConstructor
 public enum Status {
@@ -30,4 +32,6 @@ public enum Status {
             case CANCELED -> OrderStatusDto.CANCELED;
         };
     }
+
+    public static final List<Status> canRestart = List.of(COMPLETED, DELIVERY, WAITING_FOR_DELIVERY, PACKAGING, ASSEMBLY);
 }
