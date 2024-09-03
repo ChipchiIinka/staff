@@ -103,7 +103,7 @@ class StaffServiceTest {
     void testSaveStaff() {
         when(staffMapper.toEntity(staffSaveRequestDto, staffEntity)).thenReturn(staffEntity);
 
-        staffService.saveStaff(staffSaveRequestDto);
+        staffService.createStaff(staffSaveRequestDto);
 
         verify(staffRepository, times(1)).save(staffEntity);
     }

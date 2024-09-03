@@ -2,10 +2,14 @@ package ru.egartech.staff.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
@@ -25,6 +29,7 @@ public class ProductService {
 
     private final StorageRepository storageRepository;
 
+    @Cacheable(Caches.PRODUCTS_CACHE)
     public ProductInfoPagingResponseDto getAllProducts(Integer pageNo, Integer pageSize,
                                                        String sortType, String sortFieldName) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
@@ -41,6 +46,7 @@ public class ProductService {
     }
 
     @Transactional
+    @Cacheable(value = Caches.PRODUCTS_CACHE, key = "#productId")
     public ProductInfoResponseDto getProductById(Long productId) {
         Long availableQuantity = storageRepository.findAvailableByProductId(productId);
         List<ManualDto> manual = productMapper.toManualDto(productRepository.findProductManualProjection(productId));
@@ -49,6 +55,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     public void createProduct(ProductSaveRequestDto productDto) {
         List<ManualDto> manuals = productDto.getManual();
         ProductEntity productEntity = new ProductEntity();
@@ -57,6 +64,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CachePut(value = Caches.PRODUCTS_CACHE, key = "#productId")
     public void updateProduct(Long productId, ProductSaveRequestDto productDto) {
         List<ManualDto> manuals = productDto.getManual();
         ProductEntity productEntity = productRepository.findById(productId)
@@ -70,6 +78,7 @@ public class ProductService {
     }
 
     @Transactional
+    @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     public void deleteProductById(Long productId) {
         productRepository.deleteById(productId);
     }

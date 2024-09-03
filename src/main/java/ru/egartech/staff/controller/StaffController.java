@@ -39,8 +39,8 @@ public class StaffController implements StaffApi {
     }
 
     @Override
-    public void saveStaff(StaffSaveRequestDto staffSaveRequestDto) {
-        staffService.saveStaff(staffSaveRequestDto);
+    public void createStaff(StaffSaveRequestDto staffSaveRequestDto) {
+        staffService.createStaff(staffSaveRequestDto);
     }
 
     @Override

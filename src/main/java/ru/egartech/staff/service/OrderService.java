@@ -3,10 +3,13 @@ package ru.egartech.staff.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.OrderEntity;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.StaffEntity;
@@ -35,6 +38,7 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     @Transactional
+    @Cacheable(value = Caches.ORDERS_CACHE, key = "'materials:' + #orderId")
     public OrderMaterialInfoResponseDto getAllNeededMaterialsInfo(Long orderId) {
         List<ProductEntity> productList = orderRepository.findOrderProducts(orderId);
         //Нахождение количества материалов с одинаковым id путем сложения
@@ -54,6 +58,7 @@ public class OrderService {
         return orderMaterialInfoResponseDto;
     }
 
+    @Cacheable(Caches.ORDERS_CACHE)
     public OrderInfoPagingResponseDto getAllOrders(Integer pageNo, Integer pageSize,
                                                    String sortType, String sortFieldName){
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
@@ -70,6 +75,7 @@ public class OrderService {
     }
 
     @Transactional
+    @Cacheable(value = Caches.ORDERS_CACHE, key = "'order:' + #orderId")
     public OrderInfoResponseDto getOrderById(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ не найден"));
@@ -77,6 +83,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void createOrder(OrderSaveRequestDto orderDto) {
         OrderEntity order = new OrderEntity();
         List<StaffEntity> staff = List.of(staffRepository.findById(orderDto.getManagerId())
@@ -90,6 +97,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToNextStatus(Long orderId, Long staffId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ не найден"));
@@ -103,6 +111,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToPreparationStatus(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ с таким id не найден"));
@@ -113,6 +122,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void deleteOrderById(Long orderId) {
         orderRepository.deleteById(orderId);
     }
