@@ -53,11 +53,7 @@ public class ProductService {
         List<ManualDto> manuals = productDto.getManual();
         ProductEntity productEntity = new ProductEntity();
         Long productId = productRepository.save(productMapper.toEntity(productDto, productEntity)).getId();
-        if(!manuals.isEmpty()){
-            for(ManualDto manual : manuals){
-                productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity());
-            }
-        }
+        manuals.forEach(manual -> productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity()));
     }
 
     @Transactional
@@ -68,9 +64,8 @@ public class ProductService {
         productRepository.save(productMapper.toEntity(productDto, productEntity));
         if(!manuals.isEmpty()){
             productRepository.deleteAllManualByProductId(productId);
-            for(ManualDto manual : manuals){
-                productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity());
-            }
+            manuals.forEach(manual ->
+                    productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity()));
         }
     }
 
