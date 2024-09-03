@@ -1,15 +1,21 @@
 package ru.egartech.staff.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
-import ru.egartech.staff.model.*;
+import ru.egartech.staff.model.MaterialInfoPagingResponseDto;
+import ru.egartech.staff.model.MaterialInfoResponseDto;
+import ru.egartech.staff.model.MaterialSaveRequestDto;
+import ru.egartech.staff.model.PagingDto;
 import ru.egartech.staff.repository.MaterialRepository;
 import ru.egartech.staff.repository.StorageRepository;
 import ru.egartech.staff.service.mapper.MaterialMapper;
@@ -22,6 +28,7 @@ public class MaterialService {
 
     private final StorageRepository storageRepository;
 
+    @Cacheable(Caches.MATERIALS_CACHE)
     public MaterialInfoPagingResponseDto getAllMaterials(Integer pageNo, Integer pageSize,
                                                          String sortType, String sortFieldName) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
@@ -38,6 +45,7 @@ public class MaterialService {
     }
 
     @Transactional
+    @Cacheable(value = Caches.MATERIALS_CACHE, key = "#materialId")
     public MaterialInfoResponseDto getMaterialById(Long materialId) {
         Long availableQuantity = storageRepository.findAvailableByMaterialId(materialId);
         MaterialEntity material = materialRepository.findById(materialId)
@@ -45,17 +53,20 @@ public class MaterialService {
         return materialMapper.toDto(material, availableQuantity);
     }
 
+    @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
     public void createMaterial(MaterialSaveRequestDto materialDto) {
         MaterialEntity material = new MaterialEntity();
         materialRepository.save(materialMapper.toEntity(materialDto, material));
     }
 
-    public void updateMaterial(Long id, MaterialSaveRequestDto materialDto) {
-        MaterialEntity material = materialRepository.findById(id)
+    @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
+    public void updateMaterial(Long materialId, MaterialSaveRequestDto materialDto) {
+        MaterialEntity material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Материал не найден"));
         materialRepository.save(materialMapper.toEntity(materialDto, material));
     }
 
+    @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
     public void deleteMaterialById(Long materialId) {
         materialRepository.deleteById(materialId);
     }

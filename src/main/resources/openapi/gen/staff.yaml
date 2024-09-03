@@ -42,7 +42,7 @@ paths:
     post:
       tags:
         - Staff
-      operationId: saveStaff
+      operationId: createStaff
       summary: Сохранения сотрудника в системе
       description: Сохранения сотрудника в системе
       requestBody:
