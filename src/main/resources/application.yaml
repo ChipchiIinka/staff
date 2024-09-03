@@ -15,3 +15,16 @@ spring:
 
   liquibase:
     change-log: db/changelog/db.changelog-master.xml
+
+app:
+  cache:
+    ttl:
+      staff-period: '* 0 1 * * *'
+      storages-period: '* 30 1 * * *'
+      products-period: '* 0 2 * * *'
+      materials-period: '* 30 2 * * *'
+      orders-period: '* 0 3 * * *'
+
+logging:
+  level:
+    ru.egartech.staff: INFO
