@@ -3,19 +3,23 @@ package ru.egartech.staff.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.egartech.staff.cache.Caches;
+import ru.egartech.staff.entity.ManualEntity;
+import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
 import ru.egartech.staff.model.*;
+import ru.egartech.staff.repository.ManualRepository;
+import ru.egartech.staff.repository.MaterialRepository;
 import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StorageRepository;
+import ru.egartech.staff.service.mapper.ManualMapper;
 import ru.egartech.staff.service.mapper.ProductMapper;
 
 import java.util.List;
@@ -27,7 +31,11 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
+    private final ManualRepository manualRepository;
+    private final ManualMapper manualMapper;
+
     private final StorageRepository storageRepository;
+    private final MaterialRepository materialRepository;
 
     @Cacheable(Caches.PRODUCTS_CACHE)
     public ProductInfoPagingResponseDto getAllProducts(Integer pageNo, Integer pageSize,
@@ -45,42 +53,53 @@ public class ProductService {
                 .content(productMapper.toListDto(productEntities));
     }
 
-    @Transactional
     @Cacheable(value = Caches.PRODUCTS_CACHE, key = "#productId")
     public ProductInfoResponseDto getProductById(Long productId) {
+        ProductEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден"));
         Long availableQuantity = storageRepository.findAvailableByProductId(productId);
-        List<ManualDto> manual = productMapper.toManualDto(productRepository.findProductManualProjection(productId));
-        return productMapper.toDto(productRepository.findById(productId)
-                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден")), manual, availableQuantity);
+        if (availableQuantity == null) {
+            availableQuantity = 0L;
+        }
+        List<ManualDto> manual = manualMapper.toManualDtoList(product.getManuals());
+        return productMapper.toDto(product, manual, availableQuantity);
     }
 
     @Transactional
     @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     public void createProduct(ProductSaveRequestDto productDto) {
-        List<ManualDto> manuals = productDto.getManual();
-        ProductEntity productEntity = new ProductEntity();
-        Long productId = productRepository.save(productMapper.toEntity(productDto, productEntity)).getId();
-        manuals.forEach(manual -> productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity()));
+        List<ManualDto> manualsDto = productDto.getManual();
+        Long productId = productRepository.save(productMapper.toEntity(productDto, new ProductEntity())).getId();
+        manualsDto.forEach(manualDto ->
+                createManual(productId, manualDto.getMaterialId(), manualDto.getQuantity()));
     }
 
     @Transactional
-    @CachePut(value = Caches.PRODUCTS_CACHE, key = "#productId")
+    @CacheEvict(value = Caches.PRODUCTS_CACHE, key = "#productId")
     public void updateProduct(Long productId, ProductSaveRequestDto productDto) {
-        List<ManualDto> manuals = productDto.getManual();
+        List<ManualDto> manualsDto = productDto.getManual();
         ProductEntity productEntity = productRepository.findById(productId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден"));
-        productRepository.save(productMapper.toEntity(productDto, productEntity));
-        if(!manuals.isEmpty()){
-            productRepository.deleteAllManualByProductId(productId);
-            manuals.forEach(manual ->
-                    productRepository.saveManual(productId, manual.getMaterial(), manual.getQuantity()));
+        if(!manualsDto.isEmpty()){
+            manualRepository.deleteAllByProduct(productEntity);
+            manualsDto.forEach(manualDto ->
+                    createManual(productId, manualDto.getMaterialId(), manualDto.getQuantity()));
         }
+        productRepository.save(productMapper.toEntity(productDto, productEntity));
     }
 
-    @Transactional
     @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     public void deleteProductById(Long productId) {
         productRepository.deleteById(productId);
+    }
+
+    private void createManual(Long productId, Long materialId, Integer quantity) {
+        ProductEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        MaterialEntity material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new RuntimeException("Material not found"));
+        ManualEntity manual = new ManualEntity(product, material, quantity);
+        manualRepository.save(manual);
     }
 }
 

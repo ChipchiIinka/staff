@@ -11,11 +11,20 @@
             <column name="address" type="VARCHAR(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="is_paid" type="boolean" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
             <column name="date" type="TIMESTAMP">
                 <constraints nullable="false" />
             </column>
-            <column name="status" type="VARCHAR(20)">
+            <column name="status" type="VARCHAR(20)" defaultValue="ACCEPTED">
                 <constraints nullable="false" />
+            </column>
+            <column name="amount" type="numeric">
+                <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>

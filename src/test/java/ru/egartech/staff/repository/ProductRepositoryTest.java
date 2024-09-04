@@ -9,13 +9,12 @@ import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.enums.MaterialType;
 import ru.egartech.staff.entity.enums.ProductType;
-import ru.egartech.staff.entity.projection.ManualProjection;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -50,39 +49,12 @@ class ProductRepositoryTest {
     }
 
     @Test
-    void testSaveManual() {
-        productRepository.saveManual(product.getId(), material.getId(), 10);
-
-        List<ManualProjection> manualProjections = productRepository.findProductManualProjection(product.getId());
-        assertEquals(1, manualProjections.size());
-
-        ManualProjection manualProjection = manualProjections.get(0);
-        assertEquals(material.getId(), manualProjection.getMaterial());
-        assertEquals(10, manualProjection.getQuantity());
-    }
-
-    @Test
-    void testFindManualMapInfoMaterialQuantity() {
-        productRepository.saveManual(product.getId(), material.getId(), 10);
-
-        List<ManualProjection> manualProjection = productRepository.findProductManualProjection(product.getId());
-
-        assertNotNull(manualProjection);
-        assertEquals(1, manualProjection.size());
-
-        ManualProjection manualProjection1 = manualProjection.get(0);
-        assertEquals(material.getId(), manualProjection1.getMaterial());
-        assertEquals(10, manualProjection1.getQuantity());
-    }
-
-    @Test
-    void testDeleteAllManualByProductId() {
-        productRepository.saveManual(product.getId(), material.getId(), 10);
-
-        productRepository.deleteAllManualByProductId(product.getId());
-
-        List<ManualProjection> manualProjection = productRepository.findProductManualProjection(product.getId());
-        assertTrue(manualProjection.isEmpty());
+    void testCreate(){
+        assertNotNull(productRepository.findById(product.getId()));
+        assertEquals(product.getName(), productRepository.findById(product.getId()).get().getName());
+        assertEquals(product.getDescription(), productRepository.findById(product.getId()).get().getDescription());
+        assertEquals(product.getPrice(), productRepository.findById(product.getId()).get().getPrice());
+        assertNotNull(material);
     }
 
     @Test

@@ -47,6 +47,11 @@ public class OrderController implements OrdersApi {
     }
 
     @Override
+    public void updateOrderStatusToCancel(Long orderId) {
+        orderService.orderToCancelStatus(orderId);
+    }
+
+    @Override
     public void deleteOrderById(Long orderId) {
         orderService.deleteOrderById(orderId);
     }

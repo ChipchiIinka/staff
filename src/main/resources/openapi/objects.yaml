@@ -128,6 +128,9 @@ components:
     OrderHouse:
       type: string
       description: Номер дома заказчика
+    OrderDescription:
+      type: string
+      description: Описание или комментарий заказа
     OrderDate:
       type: string
       description: Время заказа
@@ -147,6 +150,13 @@ components:
     OrderAddress:
       type: string
       description: Полный адрес заказа
+    OrderAmount:
+      type: number
+      description: Цена всего заказа
+      format: double
+    OrderIsPaid:
+      type: boolean
+      description: Оплачен ли заказ
 
     ProductId:
       type: integer
@@ -267,7 +277,7 @@ components:
       type: object
       description: Данные руководства по сборке товара
       properties:
-        material:
+        material_id:
           $ref: '#/components/schemas/MaterialId'
         quantity:
           $ref: '#/components/schemas/ManualQuantity'

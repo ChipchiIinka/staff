@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.enums.ProductType;
-import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.model.*;
 
 import java.math.BigDecimal;
@@ -92,41 +91,6 @@ class ProductMapperTest {
         assertEquals(BigDecimal.valueOf(100.0), product.getPrice());
     }
 
-    @Test
-    void testToManualSaveRequestDto() {
-        ManualProjection manualProjection1 = new ManualProjection() {
-            @Override
-            public Long getMaterial() {
-                return 1L;
-            }
-
-            @Override
-            public Integer getQuantity() {
-                return 12;
-            }
-        };
-        ManualProjection manualProjection2 = new ManualProjection() {
-            @Override
-            public Long getMaterial() {
-                return 2L;
-            }
-
-            @Override
-            public Integer getQuantity() {
-                return 22;
-            }
-        };
-
-        List<ManualDto> result = productMapper.toManualDto(List.of(manualProjection1, manualProjection2));
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(1L, result.get(0).getMaterial());
-        assertEquals(2L, result.get(1).getMaterial());
-        assertEquals(12, result.get(0).getQuantity());
-        assertEquals(22, result.get(1).getQuantity());
-    }
-
     private static ProductEntity createProductEntity(Long productId) {
         ProductEntity productEntity = new ProductEntity();
         productEntity.setId(productId);
@@ -139,7 +103,7 @@ class ProductMapperTest {
 
     private static ManualDto createManual(Long id) {
         return new ManualDto()
-                .material(id)
+                .materialId(id)
                 .quantity(id.intValue() * 10);
     }
 }

@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.egartech.staff.entity.enums.MaterialType;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@Entity
 @Table(name = "materials")
 public class MaterialEntity {
     @Id
