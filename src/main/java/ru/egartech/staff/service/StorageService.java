@@ -42,7 +42,6 @@ public class StorageService {
                 .content(storageMapper.toListDto(storageEntities));
     }
 
-    @Transactional
     @Cacheable(value = Caches.STORAGES_CACHE, key = "#storageId")
     public StorageInfoResponseDto getStorageById(Long storageId) {
         StorageEntity storageEntity = storageRepository.findById(storageId)
@@ -78,7 +77,6 @@ public class StorageService {
         storageRepository.save(storageMapper.toEntity(storageSaveRequestDto, storageEntity));
     }
 
-    @Transactional
     @CacheEvict(value = Caches.STORAGES_CACHE, allEntries = true)
     public void deleteStorageById(Long storageId) {
         storageRepository.deleteById(storageId);

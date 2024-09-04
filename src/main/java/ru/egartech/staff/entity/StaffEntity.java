@@ -7,12 +7,14 @@ import lombok.*;
 import ru.egartech.staff.entity.enums.Position;
 import ru.egartech.staff.entity.enums.Role;
 
-@Entity
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@Entity
 @Table(name = "staff")
 public class StaffEntity {
 
@@ -48,4 +50,11 @@ public class StaffEntity {
     @NotNull
     @Column(name = "full_name", length = 100)
     private String fullName;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @JoinTable(name = "staff_projects",
+            joinColumns = @JoinColumn(name = "staff_id"),
+            inverseJoinColumns = @JoinColumn(name = "order_id"))
+    private List<OrderEntity> projects;
 }

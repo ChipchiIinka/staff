@@ -11,6 +11,9 @@
             <column name="product_id" type="int8">
                 <constraints nullable="false"/>
             </column>
+<!--            <column name="quantity" type="int4">-->
+<!--                <constraints nullable="false"/>-->
+<!--            </column>-->
         </createTable>
         <addForeignKeyConstraint
                 baseColumnNames="order_id"

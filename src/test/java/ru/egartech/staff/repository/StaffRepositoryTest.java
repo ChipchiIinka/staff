@@ -6,12 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 import ru.egartech.staff.entity.StaffEntity;
 import ru.egartech.staff.entity.enums.Position;
 import ru.egartech.staff.entity.enums.Role;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -34,13 +36,13 @@ class StaffRepositoryTest {
         staff.setPhoneNumber("1234567890");
         staff.setDeleted(false);  // Not banned by default
         staff.setRole(Role.USER);
+        staff.setProjects(new ArrayList<>());
         staff.setPosition(Position.MANAGER);
         staff.setFullName("Test User");
         staff = staffRepository.save(staff);
     }
 
     @Test
-    @Transactional
     void testMarkAsBanned() {
         staffRepository.markAsBanned(staff.getId());
 
@@ -54,7 +56,6 @@ class StaffRepositoryTest {
 
 
     @Test
-    @Transactional
     void testMarkAsUnbanned() {
         staffRepository.markAsBanned(staff.getId());
         staffRepository.markAsUnbanned(staff.getId());

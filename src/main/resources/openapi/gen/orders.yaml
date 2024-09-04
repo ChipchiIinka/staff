@@ -159,6 +159,28 @@ paths:
           $ref: '../service.yaml#/components/responses/NOT_FOUND'
         500:
           $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
+  /orders/{orderId}/cancel:
+    patch:
+      operationId: updateOrderStatusToCancel
+      summary: Изменить статус заказа по идентификатору
+      description: Изменить статус заказа на отменен
+      parameters:
+        - $ref: '../objects.yaml#/components/parameters/orderId'
+      tags:
+        - Orders
+      responses:
+        200:
+          description: Данные были успешно обновлены
+        400:
+          $ref: '../service.yaml#/components/responses/BAD_REQUEST'
+        401:
+          $ref: '../service.yaml#/components/responses/UNAUTHORIZED'
+        403:
+          $ref: '../service.yaml#/components/responses/FORBIDDEN'
+        404:
+          $ref: '../service.yaml#/components/responses/NOT_FOUND'
+        500:
+          $ref: '../service.yaml#/components/responses/INTERNAL_SERVER_ERROR'
 
   /orders/{orderId}/materials:
     get:
@@ -211,6 +233,10 @@ components:
           $ref: '../objects.yaml#/components/schemas/OrderDate'
         status:
           $ref: '../objects.yaml#/components/schemas/OrderStatus'
+        amount:
+          $ref: '../objects.yaml#/components/schemas/OrderAmount'
+        is_paid:
+          $ref: '../objects.yaml#/components/schemas/OrderIsPaid'
 
     OrderSaveRequest:
       type: object
@@ -224,6 +250,8 @@ components:
           $ref: '../objects.yaml#/components/schemas/OrderStreet'
         house:
           $ref: '../objects.yaml#/components/schemas/OrderHouse'
+        description:
+          $ref: '../objects.yaml#/components/schemas/OrderDescription'
         order_products:
           type: array
           items:
@@ -241,14 +269,20 @@ components:
           $ref: '../objects.yaml#/components/schemas/OrderDate'
         status:
           $ref: '../objects.yaml#/components/schemas/OrderStatus'
+        description:
+          $ref: '../objects.yaml#/components/schemas/OrderDescription'
+        amount:
+          $ref: '../objects.yaml#/components/schemas/OrderAmount'
+        is_paid:
+          $ref: '../objects.yaml#/components/schemas/OrderIsPaid'
         order_products:
           type: array
           items:
-            $ref: '../objects.yaml#/components/schemas/ProductId'
+            $ref: '#/components/schemas/ProductShortInfo'
         order_staff:
           type: array
           items:
-            $ref: '../objects.yaml#/components/schemas/StaffId'
+            $ref: '#/components/schemas/StaffShortInfo'
 
     OrderMaterialInfoResponse:
       type: object
@@ -260,3 +294,27 @@ components:
           type: array
           items:
             $ref: '../objects.yaml#/components/schemas/Manual'
+
+    ProductShortInfo:
+      type: object
+      description: Короткая информация о товаре
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/ProductId'
+        name:
+          $ref: '../objects.yaml#/components/schemas/ProductName'
+        price:
+          $ref: '../objects.yaml#/components/schemas/ProductPrice'
+        quantity:
+          $ref: '../objects.yaml#/components/schemas/ProductQuantity'
+
+    StaffShortInfo:
+      type: object
+      description: Короткая информация о товаре
+      properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/StaffId'
+        full_name:
+          $ref: '../objects.yaml#/components/schemas/StaffFullName'
+        position:
+          $ref: '../objects.yaml#/components/schemas/StaffPosition'

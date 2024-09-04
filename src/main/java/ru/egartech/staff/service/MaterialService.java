@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.exception.ErrorType;
@@ -44,10 +43,12 @@ public class MaterialService {
                 .content(materialMapper.toListDto(materialEntities));
     }
 
-    @Transactional
     @Cacheable(value = Caches.MATERIALS_CACHE, key = "#materialId")
     public MaterialInfoResponseDto getMaterialById(Long materialId) {
         Long availableQuantity = storageRepository.findAvailableByMaterialId(materialId);
+        if (availableQuantity == null) {
+            availableQuantity = 0L;
+        }
         MaterialEntity material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Материал не найден"));
         return materialMapper.toDto(material, availableQuantity);
