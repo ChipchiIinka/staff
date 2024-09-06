@@ -22,8 +22,8 @@ public class OrderController implements OrdersApi {
 
     @Override
     public OrderInfoPagingResponseDto getAllOrders(Integer pageNumber, Integer pageSize,
-                                                   String sortType, String sortFieldName) {
-        return orderService.getAllOrders(pageNumber, pageSize, sortType, sortFieldName);
+                                                   String sortType, String sortFieldName, String searchingFilter) {
+        return orderService.getAllOrders(pageNumber, pageSize, sortType, sortFieldName, searchingFilter);
     }
 
     @Override

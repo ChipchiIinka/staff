@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.StaffEntity;
@@ -14,6 +15,7 @@ import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
 import ru.egartech.staff.model.*;
 import ru.egartech.staff.repository.StaffRepository;
+import ru.egartech.staff.repository.specification.StaffSpecification;
 import ru.egartech.staff.service.mapper.StaffMapper;
 
 @Service
@@ -25,15 +27,19 @@ public class StaffService {
 
     @Cacheable(Caches.STAFF_CACHE)
     public StaffInfoPagingResponseDto getAllStaff(Integer pageNo, Integer pageSize,
-                                                  String sortType, String sortFieldName) {
+                                                  String sortType, String sortFieldName, String searchingFilter) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
-        PagingDto paging = new PagingDto();
-        Page<StaffEntity> staffEntities = staffRepository.findAll(
-                PageRequest.of(pageNo, pageSize, sort));
-        paging.setPageNumber(pageNo);
-        paging.setPageSize(pageSize);
-        paging.setCount(staffEntities.getTotalElements());
-        paging.setPages(staffEntities.getTotalPages());
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+        Specification<StaffEntity> staffSpecification = Specification
+                .where(StaffSpecification.hasLogin(searchingFilter))
+                .or(StaffSpecification.hasFullName(searchingFilter))
+                .or(StaffSpecification.hasPosition(searchingFilter));
+        Page<StaffEntity> staffEntities = staffRepository.findAll(staffSpecification, pageRequest);
+        PagingDto paging = new PagingDto()
+                .pageNumber(pageNo)
+                .pageSize(pageSize)
+                .count(staffEntities.getTotalElements())
+                .pages(staffEntities.getTotalPages());
         return new StaffInfoPagingResponseDto()
                 .paging(paging)
                 .content(staffMapper.toListDto(staffEntities));

@@ -1,8 +1,10 @@
 package ru.egartech.staff.service;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import ru.egartech.staff.entity.*;
 import ru.egartech.staff.entity.enums.Status;
 import ru.egartech.staff.exception.StaffException;
@@ -96,23 +99,24 @@ class OrderServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void testGetAllOrders() {
         PageRequest pageRequest = PageRequest.of(1, 2, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<OrderEntity> orderEntities = new PageImpl<>(List.of(orderEntity), pageRequest, 3);
         List<OrderListInfoResponseDto> orderDtos = List.of(orderListInfoResponseDto);
 
-        when(orderRepository.findAll(pageRequest)).thenReturn(orderEntities);
+        when(orderRepository.findAll(ArgumentMatchers.any(Specification.class), ArgumentMatchers.eq(pageRequest))).thenReturn(orderEntities);
         when(orderMapper.toListDto(orderEntities)).thenReturn(orderDtos);
 
-        OrderInfoPagingResponseDto result = orderService.getAllOrders(1, 2, "asc", "id");
+        OrderInfoPagingResponseDto response = orderService.getAllOrders(1, 2, "asc", "id", "");
 
-        assertEquals(1, result.getContent().size());
-        assertEquals(2, result.getPaging().getPages());
-        assertEquals(3, result.getPaging().getCount());
-        assertEquals(1, result.getPaging().getPageNumber());
-        assertEquals(2, result.getPaging().getPageSize());
-        verify(orderRepository, times(1)).findAll(pageRequest);
+        assertEquals(1, response.getContent().size());
+        assertEquals(2, response.getPaging().getPages());
+        assertEquals(3, response.getPaging().getCount());
+        assertEquals(1, response.getPaging().getPageNumber());
+        assertEquals(2, response.getPaging().getPageSize());
+        assertEquals(orderDtos, response.getContent());
     }
 
     @Test

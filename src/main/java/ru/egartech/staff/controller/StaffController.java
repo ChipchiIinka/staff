@@ -19,8 +19,8 @@ public class StaffController implements StaffApi {
 
     @Override
     public StaffInfoPagingResponseDto getAllStaff(Integer pageNumber, Integer pageSize,
-                                                  String sortType, String sortFieldName) {
-        return staffService.getAllStaff(pageNumber, pageSize, sortType, sortFieldName);
+                                                  String sortType, String sortFieldName, String searchingFilter) {
+        return staffService.getAllStaff(pageNumber, pageSize, sortType, sortFieldName, searchingFilter);
     }
 
     @Override

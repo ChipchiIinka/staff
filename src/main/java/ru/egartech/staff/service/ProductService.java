@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.ManualEntity;
@@ -19,6 +20,7 @@ import ru.egartech.staff.repository.ManualRepository;
 import ru.egartech.staff.repository.MaterialRepository;
 import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StorageRepository;
+import ru.egartech.staff.repository.specification.ProductSpecification;
 import ru.egartech.staff.service.mapper.ManualMapper;
 import ru.egartech.staff.service.mapper.ProductMapper;
 
@@ -39,15 +41,18 @@ public class ProductService {
 
     @Cacheable(Caches.PRODUCTS_CACHE)
     public ProductInfoPagingResponseDto getAllProducts(Integer pageNo, Integer pageSize,
-                                                       String sortType, String sortFieldName) {
+                                                       String sortType, String sortFieldName, String searchingFilter) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
-        PagingDto paging = new PagingDto();
-        Page<ProductEntity> productEntities = productRepository.findAll(
-                PageRequest.of(pageNo, pageSize, sort));
-        paging.setPageNumber(pageNo);
-        paging.setPageSize(pageSize);
-        paging.setCount(productEntities.getTotalElements());
-        paging.setPages(productEntities.getTotalPages());
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+        Specification<ProductEntity> productSpecification = Specification
+                .where(ProductSpecification.hasName(searchingFilter))
+                .or(ProductSpecification.hasType(searchingFilter));
+        Page<ProductEntity> productEntities = productRepository.findAll(productSpecification, pageRequest);
+        PagingDto paging = new PagingDto()
+                .pageNumber(pageNo)
+                .pageSize(pageSize)
+                .count(productEntities.getTotalElements())
+                .pages(productEntities.getTotalPages());
         return new ProductInfoPagingResponseDto()
                 .paging(paging)
                 .content(productMapper.toListDto(productEntities));

@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.egartech.staff.cache.Caches;
@@ -18,6 +19,7 @@ import ru.egartech.staff.model.*;
 import ru.egartech.staff.repository.OrderRepository;
 import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StaffRepository;
+import ru.egartech.staff.repository.specification.OrderSpecification;
 import ru.egartech.staff.service.mapper.OrderMapper;
 
 import java.math.BigDecimal;
@@ -62,15 +64,17 @@ public class OrderService {
 
     @Cacheable(Caches.ORDERS_CACHE)
     public OrderInfoPagingResponseDto getAllOrders(Integer pageNo, Integer pageSize,
-                                                   String sortType, String sortFieldName){
+                                                   String sortType, String sortFieldName, String searchingFilter){
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
-        PagingDto paging = new PagingDto();
-        Page<OrderEntity> orderEntities = orderRepository.findAll(
-                PageRequest.of(pageNo, pageSize, sort));
-        paging.setPageNumber(pageNo);
-        paging.setPageSize(pageSize);
-        paging.setCount(orderEntities.getTotalElements());
-        paging.setPages(orderEntities.getTotalPages());
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+        Specification<OrderEntity> orderSpecification = Specification
+                .where(OrderSpecification.hasStatus(searchingFilter));
+        Page<OrderEntity> orderEntities = orderRepository.findAll(orderSpecification, pageRequest);
+        PagingDto paging = new PagingDto()
+                .pageNumber(pageNo)
+                .pageSize(pageSize)
+                .count(orderEntities.getTotalElements())
+                .pages(orderEntities.getTotalPages());
         return new OrderInfoPagingResponseDto()
                 .paging(paging)
                 .content(orderMapper.toListDto(orderEntities));
