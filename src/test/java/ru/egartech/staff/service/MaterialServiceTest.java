@@ -1,8 +1,10 @@
 package ru.egartech.staff.service;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.model.*;
 import ru.egartech.staff.repository.MaterialRepository;
@@ -52,23 +55,24 @@ class MaterialServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void testGetAllMaterials() {
         PageRequest pageRequest = PageRequest.of(1, 2, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<MaterialEntity> dbMaterials = new PageImpl<>(List.of(material), pageRequest, 3);
-        List<MaterialListInfoResponseDto> mappedMaterialsList = List.of(materialListInfoResponseDto);
+        List<MaterialListInfoResponseDto> materialDtos = List.of(materialListInfoResponseDto);
 
-        when(materialRepository.findAll(pageRequest)).thenReturn(dbMaterials);
-        when(materialMapper.toListDto(dbMaterials)).thenReturn(mappedMaterialsList);
+        when(materialRepository.findAll(ArgumentMatchers.any(Specification.class), ArgumentMatchers.eq(pageRequest))).thenReturn(dbMaterials);
+        when(materialMapper.toListDto(dbMaterials)).thenReturn(materialDtos);
 
-        MaterialInfoPagingResponseDto result = materialService.getAllMaterials(1, 2, "asc", "id");
+        MaterialInfoPagingResponseDto response = materialService.getAllMaterials(1, 2, "asc", "id", "");
 
-        assertEquals(1, result.getContent().size());
-        assertEquals(2, result.getPaging().getPages());
-        assertEquals(2, result.getPaging().getPageSize());
-        assertEquals(1, result.getPaging().getPageNumber());
-        assertEquals(3, result.getPaging().getCount());
-        verify(materialRepository, times(1)).findAll(pageRequest);
+        assertEquals(1, response.getContent().size());
+        assertEquals(2, response.getPaging().getPages());
+        assertEquals(2, response.getPaging().getPageSize());
+        assertEquals(1, response.getPaging().getPageNumber());
+        assertEquals(3, response.getPaging().getCount());
+        assertEquals(materialDtos, response.getContent());
     }
 
     @Test

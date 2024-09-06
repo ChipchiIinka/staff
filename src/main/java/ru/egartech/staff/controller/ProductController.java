@@ -16,8 +16,8 @@ public class ProductController implements ProductsApi {
 
     @Override
     public ProductInfoPagingResponseDto getAllProducts(Integer pageNumber, Integer pageSize,
-                                                       String sortType, String sortFieldName) {
-        return productService.getAllProducts(pageNumber, pageSize, sortType, sortFieldName);
+                                                       String sortType, String sortFieldName, String searchingFilter) {
+        return productService.getAllProducts(pageNumber, pageSize, sortType, sortFieldName, searchingFilter);
     }
 
     @Override

@@ -22,6 +22,7 @@ paths:
         - $ref: '../objects.yaml#/components/parameters/pageSize'
         - $ref: '../objects.yaml#/components/parameters/sortingType'
         - $ref: '../objects.yaml#/components/parameters/sortingFieldName'
+        - $ref: '../objects.yaml#/components/parameters/searchingFilter'
       responses:
         200:
           description: Данные были успешно получены

@@ -16,8 +16,8 @@ public class MaterialController implements MaterialsApi {
 
     @Override
     public MaterialInfoPagingResponseDto getAllMaterials(Integer pageNumber, Integer pageSize,
-                                                         String sortType, String sortFieldName) {
-        return materialService.getAllMaterials(pageNumber, pageSize, sortType, sortFieldName);
+                                                         String sortType, String sortFieldName, String searchingFilter) {
+        return materialService.getAllMaterials(pageNumber, pageSize, sortType, sortFieldName, searchingFilter);
     }
 
     @Override

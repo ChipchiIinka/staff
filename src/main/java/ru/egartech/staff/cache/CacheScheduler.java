@@ -21,7 +21,7 @@ public class CacheScheduler {
     @CacheEvict(value = Caches.STAFF_CACHE, allEntries = true)
     @PostConstruct
     public void updateStaffCache() {
-        staffService.getAllStaff(0, 10, "asc", "id");
+        staffService.getAllStaff(0, 10, "asc", "id", "");
     }
 
     @Scheduled(cron = "${app.cache.ttl.storages-period}")
@@ -35,20 +35,20 @@ public class CacheScheduler {
     @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     @PostConstruct
     public void updateProductCache() {
-        productService.getAllProducts(0, 10, "asc", "id");
+        productService.getAllProducts(0, 10, "asc", "id", "");
     }
 
     @Scheduled(cron = "${app.cache.ttl.materials-period}")
     @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
     @PostConstruct
     public void updateMaterialCache() {
-        materialService.getAllMaterials(0, 10, "asc", "id");
+        materialService.getAllMaterials(0, 10, "asc", "id", "");
     }
 
     @Scheduled(cron = "${app.cache.ttl.orders-period}")
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     @PostConstruct
     public void updateOrderCache() {
-        orderService.getAllOrders(0, 10, "asc", "id");
+        orderService.getAllOrders(0, 10, "asc", "id", "");
     }
 }
