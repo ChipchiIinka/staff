@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import ru.egartech.staff.entity.OrderDetailsEntity;
 import ru.egartech.staff.entity.OrderEntity;
 import ru.egartech.staff.entity.ProductEntity;
 import ru.egartech.staff.entity.StaffEntity;
@@ -13,16 +14,14 @@ import ru.egartech.staff.entity.enums.Position;
 import ru.egartech.staff.entity.enums.ProductType;
 import ru.egartech.staff.entity.enums.Role;
 import ru.egartech.staff.entity.enums.Status;
-import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = OrderMapperImpl.class)
 class OrderMapperTest {
@@ -45,6 +44,10 @@ class OrderMapperTest {
         assertEquals("Город N, ул.Уличная, 2", result.get(1).getAddress());
         assertEquals(LocalDate.now(), result.get(0).getDate());
         assertEquals(LocalDate.now(), result.get(1).getDate());
+        assertFalse(result.get(0).getIsPaid());
+        assertFalse(result.get(1).getIsPaid());
+        assertEquals(300.0, result.get(0).getAmount());
+        assertEquals(300.0, result.get(1).getAmount());
         assertEquals(OrderStatusDto.ACCEPTED, result.get(0).getStatus());
         assertEquals(OrderStatusDto.ACCEPTED, result.get(1).getStatus());
     }
@@ -57,6 +60,8 @@ class OrderMapperTest {
 
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
         assertEquals(OrderStatusDto.ACCEPTED, result.getStatus());
+        assertFalse(result.getIsPaid());
+        assertEquals(300.0, result.getAmount());
         assertEquals(LocalDate.now(), result.getDate());
     }
 
@@ -69,8 +74,9 @@ class OrderMapperTest {
         assertEquals(1L, result.getId());
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
         assertEquals(OrderStatusDto.ACCEPTED, result.getStatus());
-        assertEquals(List.of(1L, 2L), result.getOrderProducts());
-        assertEquals(List.of(1L, 2L), result.getOrderProducts());
+        assertEquals(300.d, result.getAmount());
+        assertFalse(result.getIsPaid());
+        assertEquals("Description", result.getDescription());
         assertEquals(LocalDate.now(), result.getDate());
     }
 
@@ -81,52 +87,79 @@ class OrderMapperTest {
         requestDto.setStreet("ул.Уличная");
         requestDto.setHouse(String.valueOf(1L));
         requestDto.setOrderProducts(List.of(1L, 2L, 3L));
+        requestDto.setDescription("Description");
 
         List<StaffEntity> staffList = List.of(getStaffEntity(0));
         List<ProductEntity> productList = List.of(getProductEntity(0));
 
         OrderEntity result = new OrderEntity();
         result.setId(1L);
-        result.setStaff(new ArrayList<>());
+        result.setOrderDetails(new OrderDetailsEntity());
 
-        orderMapper.toEntity(staffList, requestDto, result, productList);
+        BigDecimal amount = new BigDecimal("300.00");
+
+        orderMapper.toEntity(requestDto, result, staffList, productList, amount);
 
         assertNotNull(result);
         assertEquals("Город N, ул.Уличная, 1", result.getAddress());
-        assertEquals(Status.ACCEPTED, result.getStatus());
         assertEquals(LocalDate.now(), result.getDate());
+        assertFalse(result.getOrderDetails().isPaid());
+        assertEquals(Status.ACCEPTED, result.getOrderDetails().getStatus());
+        assertEquals("Description", result.getOrderDetails().getDescription());
+        assertEquals(List.of(getProductEntity(0)), result.getOrderDetails().getProducts());
+        assertEquals(List.of(getStaffEntity(0)), result.getOrderDetails().getStaff());
     }
 
     @Test
-    void testToManualInfoDto(){
-        ManualProjection manualProjection1 = new ManualProjection() {
-            @Override
-            public Long getMaterial() {
-                return 1L;
-            }
+    void testToShortInfo(){
+        Map<ProductEntity, Long> products = new HashMap<>();
+        for (int i = 0; i < 2; i++){
+            products.put(getProductEntity(i), 1L);
+        }
+        List<StaffEntity> staff = new ArrayList<>();
+        for (int i = 0; i < 2; i++){
+            staff.add(getStaffEntity(i));
+        }
 
-            @Override
-            public Integer getQuantity() {
-                return 2;
-            }
-        };
-        ManualProjection manualProjection2 = new ManualProjection() {
-            @Override
-            public Long getMaterial() {
-                return 2L;
-            }
+        List<ProductShortInfoDto> productResult = orderMapper.toProductShortInfo(products);
+        List<StaffShortInfoDto> staffResult = orderMapper.toStaffShortInfo(staff);
 
-            @Override
-            public Integer getQuantity() {
-                return 12;
-            }
-        };
 
-        List<ManualDto> result = orderMapper.toManualDto(List.of(manualProjection1, manualProjection2));
-        assertEquals(1L, result.get(0).getMaterial());
-        assertEquals(2, result.get(0).getQuantity());
-        assertEquals(2L, result.get(1).getMaterial());
-        assertEquals(12, result.get(1).getQuantity());
+        assertEquals(2, productResult.size());
+        assertEquals(2, staffResult.size());
+        assertThat(productResult).containsExactlyInAnyOrder(getProductShortInfo(0), getProductShortInfo(1));
+        assertEquals(List.of(getStaffShortInfo(0), getStaffShortInfo(1)), staffResult);
+    }
+
+    @Test
+    void testToFullAddress(){
+        OrderSaveRequestDto requestDto = new OrderSaveRequestDto();
+        requestDto.setCity("city");
+        requestDto.setStreet("street");
+        requestDto.setHouse("1");
+
+        String fullAddress = orderMapper.toFullAddress(requestDto);
+
+        assertEquals("city, street, 1", fullAddress);
+    }
+
+    @Test
+    void mapStatus(){
+        OrderStatusDto statusDto1 = orderMapper.mapStatus(Status.ACCEPTED);
+        OrderStatusDto statusDto2 = orderMapper.mapStatus(Status.PREPARATION);
+        OrderStatusDto statusDto3 = orderMapper.mapStatus(Status.ASSEMBLY);
+        OrderStatusDto statusDto4 = orderMapper.mapStatus(Status.PACKAGING);
+        OrderStatusDto statusDto5 = orderMapper.mapStatus(Status.DELIVERY);
+        OrderStatusDto statusDto6 = orderMapper.mapStatus(Status.COMPLETED);
+        OrderStatusDto statusDto7 = orderMapper.mapStatus(Status.CANCELED);
+
+        assertEquals(OrderStatusDto.ACCEPTED, statusDto1);
+        assertEquals(OrderStatusDto.PREPARATION, statusDto2);
+        assertEquals(OrderStatusDto.ASSEMBLY, statusDto3);
+        assertEquals(OrderStatusDto.PACKAGING, statusDto4);
+        assertEquals(OrderStatusDto.DELIVERY, statusDto5);
+        assertEquals(OrderStatusDto.COMPLETED, statusDto6);
+        assertEquals(OrderStatusDto.CANCELED, statusDto7);
     }
 
 
@@ -142,10 +175,14 @@ class OrderMapperTest {
         OrderEntity order = new OrderEntity();
         order.setId(id);
         order.setAddress("Город N, ул.Уличная, " + id);
-        order.setStatus(Status.ACCEPTED);
         order.setDate(LocalDate.now());
-        order.setProducts(products);
-        order.setStaff(staff);
+        order.setAmount(BigDecimal.valueOf(300.00));
+        order.setOrderDetails(new OrderDetailsEntity());
+        order.getOrderDetails().setStatus(Status.ACCEPTED);
+        order.getOrderDetails().setDescription("Description");
+        order.getOrderDetails().setPaid(false);
+        order.getOrderDetails().setProducts(products);
+        order.getOrderDetails().setStaff(staff);
         return order;
     }
 
@@ -173,5 +210,24 @@ class OrderMapperTest {
         staffEntity.setPosition(Position.DIRECTOR);
         staffEntity.setDeleted(false);
         return staffEntity;
+    }
+
+    private static ProductShortInfoDto getProductShortInfo(int i) {
+        ProductShortInfoDto product = new ProductShortInfoDto();
+        long productId = i + 1;
+        product.setId(productId);
+        product.setName("Товар " + productId);
+        product.setPrice(BigDecimal.valueOf(productId * 100).doubleValue());
+        product.quantity(1);
+        return product;
+    }
+
+    private static StaffShortInfoDto getStaffShortInfo(int i) {
+        StaffShortInfoDto staff = new StaffShortInfoDto();
+        long staffId = i + 1;
+        staff.setId(staffId);
+        staff.setFullName("Фамилия Имя Отчество");
+        staff.setPosition(StaffPositionDto.DIRECTOR);
+        return staff;
     }
 }

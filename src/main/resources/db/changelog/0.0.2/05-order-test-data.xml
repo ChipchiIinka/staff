@@ -8,6 +8,9 @@
             <column name="address" value="г. Санкт-Петербург, ул. Кутузова, д. 6 кв 12"/>
             <column name="date" value="2024-08-12"/>
             <column name="status" value="COMPLETED"/>
+            <column name="amount" value="63000"/>
+            <column name="description" value="Доставить к 2 часам, контактный номер +12049128242"/>
+            <column name="is_paid" value="true"/>
         </insert>
         <insert tableName="order_products">
             <column name="order_id" value="1"/>
@@ -46,6 +49,9 @@
             <column name="address" value="г. Москва, ул. Станичная, д. 12 кв 23"/>
             <column name="date" value="2024-08-20"/>
             <column name="status" value="DELIVERY"/>
+            <column name="amount" value="25000"/>
+            <column name="description" value="Доставить к 12 часам, контактный номер +12049128222"/>
+            <column name="is_paid" value="false"/>
         </insert>
         <insert tableName="order_products">
             <column name="order_id" value="2"/>
@@ -76,6 +82,9 @@
             <column name="address" value="г. Москва, ул. Московская, д. 11 кв 22"/>
             <column name="date" value="2024-08-23"/>
             <column name="status" value="ASSEMBLY"/>
+            <column name="amount" value="45000"/>
+            <column name="description" value="Доставить к 3 часам, контактный номер +12249128222"/>
+            <column name="is_paid" value="false"/>
         </insert>
         <insert tableName="order_products">
             <column name="order_id" value="3"/>
@@ -98,6 +107,9 @@
             <column name="address" value="г. Санкт-Петербург, ул. Суворова, д. 2 кв 11"/>
             <column name="date" value="2024-08-26"/>
             <column name="status" value="PREPARATION"/>
+            <column name="amount" value="8000"/>
+            <column name="description" value="Доставить к 11 часам, контактный номер +12029128222"/>
+            <column name="is_paid" value="false"/>
         </insert>
         <insert tableName="order_products">
             <column name="order_id" value="4"/>
@@ -116,6 +128,9 @@
             <column name="address" value="г. Санкт-Петербург, ул. Андреева, д. 32 кв 56"/>
             <column name="date" value="2024-08-30"/>
             <column name="status" value="ACCEPTED"/>
+            <column name="amount" value="19500"/>
+            <column name="description" value="Доставить к 10 часам, контактный номер +12049222222"/>
+            <column name="is_paid" value="false"/>
         </insert>
         <insert tableName="order_products">
             <column name="order_id" value="5"/>

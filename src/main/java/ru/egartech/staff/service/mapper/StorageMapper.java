@@ -9,8 +9,7 @@ import ru.egartech.staff.model.*;
 
 import java.util.List;
 
-@Mapper(componentModel="spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel="spring")
 public interface StorageMapper {
 
     List<StorageListInfoResponseDto> toListDto(Page<StorageEntity> storageEntities);
@@ -20,6 +19,7 @@ public interface StorageMapper {
                                  List<MaterialStorageInfoDto> materials);
 
     @Mapping(target = "address", expression = "java(toFullAddress(saveRequestDto))")
+    @Mapping(target = "id", ignore = true)
     StorageEntity toEntity(StorageSaveRequestDto saveRequestDto, @MappingTarget StorageEntity storageEntity);
 
     default List<ProductStorageInfoDto> toProductStorageListDto(List<ProductStorageProjection> productStorage) {

@@ -6,13 +6,15 @@ import lombok.*;
 import ru.egartech.staff.entity.enums.ProductType;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode
+@Entity
 @Table(name = "products")
 public class ProductEntity {
     @Id
@@ -30,4 +32,8 @@ public class ProductEntity {
     private ProductType type;
 
     private BigDecimal price;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    private List<ManualEntity> manuals = new ArrayList<>();
 }

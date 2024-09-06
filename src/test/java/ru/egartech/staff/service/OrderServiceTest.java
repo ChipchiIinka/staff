@@ -10,11 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import ru.egartech.staff.entity.OrderEntity;
-import ru.egartech.staff.entity.ProductEntity;
-import ru.egartech.staff.entity.StaffEntity;
+import ru.egartech.staff.entity.*;
 import ru.egartech.staff.entity.enums.Status;
-import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.exception.StaffException;
 import ru.egartech.staff.model.*;
 import ru.egartech.staff.repository.OrderRepository;
@@ -22,6 +19,7 @@ import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StaffRepository;
 import ru.egartech.staff.service.mapper.OrderMapper;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +53,7 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         orderEntity = new OrderEntity();
+        orderEntity.setOrderDetails(new OrderDetailsEntity());
         orderListInfoResponseDto = new OrderListInfoResponseDto();
         orderInfoResponseDto = new OrderInfoResponseDto();
         orderSaveRequestDto = new OrderSaveRequestDto();
@@ -62,70 +61,39 @@ class OrderServiceTest {
 
     @Test
     void testGetAllNeededMaterialsInfo() {
-        Long orderId = 1L;
+        orderEntity.setId(1L);
 
-        ProductEntity productEntity1 = new ProductEntity();
-        productEntity1.setId(1L);
-        ProductEntity productEntity2 = new ProductEntity();
-        productEntity2.setId(2L);
+        ProductEntity productEntity1 = createProductEntity(1L);
+        ProductEntity productEntity2 = createProductEntity(2L);
 
         List<ProductEntity> productList = List.of(productEntity1, productEntity2);
+        orderEntity.getOrderDetails().setProducts(productList);
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
 
-        List<ManualProjection> manualProjectionList1 = List.of(
-                new ManualProjection() {
-                    @Override
-                    public Long getMaterial() {
-                        return 1L;
-                    }
+        OrderMaterialInfoResponseDto result = orderService.getAllNeededMaterialsInfo(orderEntity.getId());
 
-                    @Override
-                    public Integer getQuantity() {
-                        return 5;
-                    }
-                }
-        );
-
-        List<ManualProjection> manualProjectionList2 = List.of(
-                new ManualProjection() {
-                    @Override
-                    public Long getMaterial() {
-                        return 1L;
-                    }
-
-                    @Override
-                    public Integer getQuantity() {
-                        return 2;
-                    }
-                },
-                new ManualProjection() {
-                    @Override
-                    public Long getMaterial() {
-                        return 2L;
-                    }
-
-                    @Override
-                    public Integer getQuantity() {
-                        return 3;
-                    }
-                }
-        );
-
-        when(orderRepository.findOrderProducts(orderId)).thenReturn(productList);
-        when(productRepository.findProductManualProjection(productEntity1.getId())).thenReturn(manualProjectionList1);
-        when(productRepository.findProductManualProjection(productEntity2.getId())).thenReturn(manualProjectionList2);
-
-        OrderMaterialInfoResponseDto result = orderService.getAllNeededMaterialsInfo(orderId);
-
-        assertEquals(orderId, result.getId());
+        assertEquals(orderEntity.getId(), result.getId());
         assertEquals(2, result.getNeededMaterials().size());
-        assertEquals(7, result.getNeededMaterials().get(0).getQuantity()); // Manual A (5+2)
-        assertEquals(3, result.getNeededMaterials().get(1).getQuantity()); // Manual B
-        verify(orderRepository, times(1)).findOrderProducts(orderId);
-        verify(productRepository, times(1)).findProductManualProjection(productEntity1.getId());
-        verify(productRepository, times(1)).findProductManualProjection(productEntity2.getId());
+        assertEquals(8, result.getNeededMaterials().get(0).getQuantity()); // Material 1: 3+5
+        assertEquals(6, result.getNeededMaterials().get(1).getQuantity()); // Material 2: 6
+
+        verify(orderRepository, times(1)).findById(orderEntity.getId());
     }
 
-
+    private static ProductEntity createProductEntity(Long id){
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setId(id);
+        List<ManualEntity> manualEntities = new ArrayList<>();
+        for (int i = 1; i < id+1; i++) {
+            ManualEntity manualEntity = new ManualEntity();
+            ManualId manualId = new ManualId(id, (long) i);
+            manualEntity.setId(manualId);
+            manualEntity.setQuantity((int) (id * 2) + i);
+            manualEntities.add(manualEntity);
+        }
+        productEntity.setManuals(manualEntities);
+        return productEntity;
+    }
 
     @Test
     void testGetAllOrders() {
@@ -149,36 +117,78 @@ class OrderServiceTest {
 
     @Test
     void testGetOrderById() {
-        Long orderId = 1L;
+        ProductEntity productEntity1 = new ProductEntity();
+        productEntity1.setId(1L);
+        ProductEntity productEntity2 = new ProductEntity();
+        productEntity2.setId(2L);
 
-        when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
+        List<ProductEntity> productList = List.of(productEntity1, productEntity2);
+
+        orderEntity.setId(1L);
+        orderEntity.getOrderDetails().setProducts(productList);
+        orderEntity.getOrderDetails().setStaff(List.of(new StaffEntity()));
+
+        orderInfoResponseDto.setOrderProducts(List.of(new ProductShortInfoDto()));
+        orderInfoResponseDto.setOrderStaff(List.of(new StaffShortInfoDto()));
+
+        when(orderRepository.findById(orderEntity.getId())).thenReturn(Optional.of(orderEntity));
         when(orderMapper.toInfoResponseDto(orderEntity)).thenReturn(orderInfoResponseDto);
+        when(orderMapper.toProductShortInfo(any())).thenReturn(List.of(
+                new ProductShortInfoDto()
+                        .id(1L)
+                        .name("Product 1")
+                        .price(BigDecimal.TEN.doubleValue())
+                        .quantity(2),
+                new ProductShortInfoDto()
+                        .id(2L)
+                        .name("Product 2")
+                        .price(BigDecimal.TEN.doubleValue())
+                        .quantity(1)
+        ));
+        when(orderMapper.toStaffShortInfo(orderEntity.getOrderDetails().getStaff())).thenReturn(List.of(new StaffShortInfoDto()));
 
-        OrderInfoResponseDto result = orderService.getOrderById(orderId);
+        OrderInfoResponseDto result = orderService.getOrderById(orderEntity.getId());
 
         assertNotNull(result);
-        verify(orderRepository, times(1)).findById(orderId);
+        assertEquals(2, result.getOrderProducts().size());
+        assertEquals(1L, result.getOrderProducts().get(0).getId());
+        assertEquals(2, result.getOrderProducts().get(0).getQuantity());
+        assertEquals(2L, result.getOrderProducts().get(1).getId());
+        assertEquals(1, result.getOrderProducts().get(1).getQuantity());
+        assertNotNull(result.getOrderStaff());
+        verify(orderRepository, times(1)).findById(orderEntity.getId());
         verify(orderMapper, times(1)).toInfoResponseDto(orderEntity);
+        verify(orderMapper, times(1)).toProductShortInfo(any());
+        verify(orderMapper, times(1)).toStaffShortInfo(orderEntity.getOrderDetails().getStaff());
     }
+
 
     @Test
     void testCreateOrder() {
         orderSaveRequestDto.setManagerId(1L);
         orderSaveRequestDto.setOrderProducts(List.of(1L, 2L));
 
+        BigDecimal amount = new BigDecimal("100");
+        ProductEntity product1 = new ProductEntity();
+        product1.setId(1L);
+        product1.setPrice(new BigDecimal("50"));
+        ProductEntity product2 = new ProductEntity();
+        product2.setId(2L);
+        product2.setPrice(new BigDecimal("50"));
+
         List<StaffEntity> staffList = List.of(new StaffEntity());
-        List<ProductEntity> products = List.of(new ProductEntity(), new ProductEntity());
+        List<ProductEntity> products = List.of(product1, product2);
 
         when(staffRepository.findById(orderSaveRequestDto.getManagerId())).thenReturn(Optional.of(new StaffEntity()));
-        when(productRepository.findById(orderSaveRequestDto.getOrderProducts().get(0))).thenReturn(Optional.of(new ProductEntity()));
-        when(productRepository.findById(orderSaveRequestDto.getOrderProducts().get(1))).thenReturn(Optional.of(new ProductEntity()));
-        when(orderMapper.toEntity(staffList, orderSaveRequestDto, orderEntity, products)).thenReturn(orderEntity);
+        when(productRepository.findById(orderSaveRequestDto.getOrderProducts().get(0))).thenReturn(Optional.of(product1));
+        when(productRepository.findById(orderSaveRequestDto.getOrderProducts().get(1))).thenReturn(Optional.of(product2));
+        when(orderMapper.toEntity(orderSaveRequestDto, orderEntity, staffList,  products, amount)).thenReturn(orderEntity);
         when(orderRepository.save(orderEntity)).thenReturn(orderEntity);
 
         orderService.createOrder(orderSaveRequestDto);
 
         verify(staffRepository, times(1)).findById(1L);
-        verify(orderMapper, times(1)).toEntity(staffList, orderSaveRequestDto, orderEntity, products);
+        verify(orderMapper, times(1)).toEntity(orderSaveRequestDto, orderEntity, staffList,  products, amount);
         verify(orderRepository, times(1)).save(orderEntity);
     }
 
@@ -190,8 +200,8 @@ class OrderServiceTest {
         Long staffId = 1L;
 
         orderEntity.setId(orderId);
-        orderEntity.setStatus(Status.ACCEPTED);
-        orderEntity.setStaff(new ArrayList<>());
+        orderEntity.getOrderDetails().setStatus(Status.ACCEPTED);
+        orderEntity.getOrderDetails().setStaff(new ArrayList<>());
         StaffEntity staffEntity = new StaffEntity();
         staffEntity.setId(staffId);
 
@@ -201,7 +211,7 @@ class OrderServiceTest {
 
         orderService.orderToNextStatus(orderId, staffId);
 
-        assertEquals(Status.PREPARATION, orderEntity.getStatus());
+        assertEquals(Status.PREPARATION, orderEntity.getOrderDetails().getStatus());
         verify(orderRepository, times(1)).findById(orderId);
         verify(staffRepository, times(1)).findById(staffId);
         verify(orderRepository, times(1)).save(orderEntity);
@@ -211,13 +221,13 @@ class OrderServiceTest {
     @Test
     void testOrderToPreparationStatus() {
         Long orderId = 1L;
-        orderEntity.setStatus(Status.PACKAGING);
+        orderEntity.getOrderDetails().setStatus(Status.PACKAGING);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
 
         orderService.orderToPreparationStatus(orderId);
 
-        assertEquals(Status.PREPARATION, orderEntity.getStatus());
+        assertEquals(Status.PREPARATION, orderEntity.getOrderDetails().getStatus());
         verify(orderRepository, times(1)).findById(orderId);
         verify(orderRepository, times(1)).save(orderEntity);
     }
@@ -225,7 +235,8 @@ class OrderServiceTest {
     @Test
     void testOrderToPreparationStatusInvalidStatus() {
         Long orderId = 1L;
-        orderEntity.setStatus(Status.ACCEPTED);
+
+        orderEntity.getOrderDetails().setStatus(Status.ACCEPTED);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(orderEntity));
 

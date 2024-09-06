@@ -1,6 +1,5 @@
 package ru.egartech.staff.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -8,13 +7,11 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.egartech.staff.cache.Caches;
-import ru.egartech.staff.entity.OrderEntity;
-import ru.egartech.staff.entity.ProductEntity;
-import ru.egartech.staff.entity.StaffEntity;
+import ru.egartech.staff.entity.*;
 import ru.egartech.staff.entity.enums.Status;
-import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.exception.ErrorType;
 import ru.egartech.staff.exception.StaffException;
 import ru.egartech.staff.model.*;
@@ -23,6 +20,8 @@ import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StaffRepository;
 import ru.egartech.staff.service.mapper.OrderMapper;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,16 +36,19 @@ public class OrderService {
     private final StaffRepository staffRepository;
     private final ProductRepository productRepository;
 
-    @Transactional
     @Cacheable(value = Caches.ORDERS_CACHE, key = "'materials:' + #orderId")
     public OrderMaterialInfoResponseDto getAllNeededMaterialsInfo(Long orderId) {
-        List<ProductEntity> productList = orderRepository.findOrderProducts(orderId);
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ c id=" + orderId + " не найден"));
+        List<ProductEntity> productList = order.getOrderDetails().getProducts();
         //Нахождение количества материалов с одинаковым id путем сложения
         Map<Long, ManualDto> materialMap = productList.stream()
-                .flatMap(product -> productRepository.findProductManualProjection(product.getId()).stream())
+                .flatMap(product -> product.getManuals().stream())
                 .collect(Collectors.toMap(
-                        ManualProjection::getMaterial,
-                        projection -> new ManualDto().material(projection.getMaterial()).quantity(projection.getQuantity()),
+                        ManualEntity::getMaterialId,
+                        manualEntity -> new ManualDto()
+                                .materialId(manualEntity.getId().getMaterialId())
+                                .quantity(manualEntity.getQuantity()),
                         (existing, incoming) -> {
                             existing.setQuantity(existing.getQuantity() + incoming.getQuantity());
                             return existing;
@@ -74,69 +76,100 @@ public class OrderService {
                 .content(orderMapper.toListDto(orderEntities));
     }
 
-    @Transactional
     @Cacheable(value = Caches.ORDERS_CACHE, key = "'order:' + #orderId")
     public OrderInfoResponseDto getOrderById(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ не найден"));
-        return orderMapper.toInfoResponseDto(order);
+        //Считаем дубликаты товара
+        Map<ProductEntity, Long> products = order.getOrderDetails().getProducts().stream()
+                .collect(Collectors.groupingBy(
+                        product -> product, // Группируем по продукту
+                        Collectors.counting() // Считаем количество каждого продукта
+                ));
+        OrderInfoResponseDto responseDto = orderMapper.toInfoResponseDto(order);
+        responseDto.setOrderStaff(orderMapper.toStaffShortInfo(order.getOrderDetails().getStaff()));
+        responseDto.setOrderProducts(orderMapper.toProductShortInfo(products));
+        return responseDto;
     }
 
-    @Transactional
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void createOrder(OrderSaveRequestDto orderDto) {
         OrderEntity order = new OrderEntity();
+        order.setOrderDetails(new OrderDetailsEntity());
         List<StaffEntity> staff = List.of(staffRepository.findById(orderDto.getManagerId())
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Сотрудник не найден")));
-
         List<ProductEntity> productList = orderDto.getOrderProducts().stream()
                 .map(productId -> productRepository.findById(productId)
                         .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден с id=" + productId)))
                 .toList();
-        orderRepository.save(orderMapper.toEntity(staff, orderDto, order, productList));
+        BigDecimal amount = productList.stream()
+                .map(ProductEntity::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        orderRepository.save(orderMapper.toEntity(orderDto, order, staff, productList, amount));
     }
 
-    @Transactional
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToNextStatus(Long orderId, Long staffId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ не найден"));
         StaffEntity staff = staffRepository.findById(staffId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Сотрудник не найден"));
-        if (!order.getStaff().contains(staff)){
-            order.getStaff().add(staff);
+        if (!order.getOrderDetails().getStaff().contains(staff)){
+            order.getOrderDetails().getStaff().add(staff);
+        }
+        if (order.getOrderDetails().getStatus().equals(Status.DELIVERY)){
+            order.getOrderDetails().setPaid(true);
         }
         toNextStatus(order);
         orderRepository.save(order);
     }
 
-    @Transactional
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToPreparationStatus(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ с таким id не найден"));
-        if (Status.canRestart.contains(order.getStatus())) {
-            order.setStatus(Status.PREPARATION);
+        if (Status.canRestart.contains(order.getOrderDetails().getStatus())) {
+            order.getOrderDetails().setStatus(Status.PREPARATION);
             orderRepository.save(order);
         } else throw new StaffException(ErrorType.CLIENT_ERROR, "Нельзя перезапустить заказ с этого состояния");
     }
 
-    @Transactional
+    @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
+    public void orderToCancelStatus(Long orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Заказ с таким id не найден"));
+        order.getOrderDetails().setStatus(Status.CANCELED);
+        orderRepository.save(order);
+    }
+
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void deleteOrderById(Long orderId) {
         orderRepository.deleteById(orderId);
     }
 
+    public void deleteAllUnusedOrders(){
+        LocalDate thresholdDate = LocalDate.now().minusMonths(1);
+        orderRepository.deleteExpiredCanceledOrders(thresholdDate, Status.CANCELED);
+    }
+
+    //Удалять все старые отмененные запросы в конце каждого месяца
+    @Scheduled(cron = "59 59 23 L * ?")
+    @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
+    public void deleteOldUnusedOrdersAtEveryEndOfMonth() {
+        deleteAllUnusedOrders();
+    }
+
     private void toNextStatus(OrderEntity order){
-        Status status = order.getStatus();
+        Status status = order.getOrderDetails().getStatus();
         switch (status){
-            case ACCEPTED -> order.setStatus(Status.PREPARATION);
-            case PREPARATION -> order.setStatus(Status.ASSEMBLY);
-            case ASSEMBLY -> order.setStatus(Status.PACKAGING);
-            case PACKAGING -> order.setStatus(Status.WAITING_FOR_DELIVERY);
-            case WAITING_FOR_DELIVERY -> order.setStatus(Status.DELIVERY);
-            case DELIVERY -> order.setStatus(Status.COMPLETED);
-            default -> order.setStatus(Status.CANCELED);
+            case ACCEPTED -> order.getOrderDetails().setStatus(Status.PREPARATION);
+            case PREPARATION -> order.getOrderDetails().setStatus(Status.ASSEMBLY);
+            case ASSEMBLY -> order.getOrderDetails().setStatus(Status.PACKAGING);
+            case PACKAGING -> order.getOrderDetails().setStatus(Status.WAITING_FOR_DELIVERY);
+            case WAITING_FOR_DELIVERY -> order.getOrderDetails().setStatus(Status.DELIVERY);
+            case DELIVERY -> order.getOrderDetails().setStatus(Status.COMPLETED);
+            case CANCELED -> order.getOrderDetails().setStatus(Status.CANCELED);
+            default -> throw new StaffException(ErrorType.COMMON_ERROR);
         }
     }
 }

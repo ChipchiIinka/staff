@@ -10,11 +10,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import ru.egartech.staff.entity.ManualEntity;
+import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.entity.ProductEntity;
-import ru.egartech.staff.entity.projection.ManualProjection;
 import ru.egartech.staff.model.*;
+import ru.egartech.staff.repository.ManualRepository;
+import ru.egartech.staff.repository.MaterialRepository;
 import ru.egartech.staff.repository.ProductRepository;
 import ru.egartech.staff.repository.StorageRepository;
+import ru.egartech.staff.service.mapper.ManualMapper;
 import ru.egartech.staff.service.mapper.ProductMapper;
 
 import java.util.List;
@@ -31,6 +35,15 @@ class ProductServiceTest {
 
     @Mock
     ProductMapper productMapper;
+
+    @Mock
+    ManualRepository manualRepository;
+
+    @Mock
+    ManualMapper manualMapper;
+
+    @Mock
+    MaterialRepository materialRepository;
 
     @Mock
     StorageRepository storageRepository;
@@ -77,13 +90,13 @@ class ProductServiceTest {
         productEntity.setName("Test Product");
 
         Long availableQuantity = 100L;
-        List<ManualProjection> manualProjections = List.of();
+        List<ManualEntity> manualEntities = List.of();
         List<ManualDto> manualDtos = List.of(new ManualDto());
 
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
         when(storageRepository.findAvailableByProductId(productId)).thenReturn(availableQuantity);
-        when(productMapper.toManualDto(manualProjections)).thenReturn(manualDtos);
+        when(manualMapper.toManualDtoList(manualEntities)).thenReturn(manualDtos);
         when(productMapper.toDto(productEntity, manualDtos, availableQuantity)).thenReturn(productInfoResponseDto);
 
         ProductInfoResponseDto actualDto = productService.getProductById(productId);
@@ -93,32 +106,56 @@ class ProductServiceTest {
 
     @Test
     void testCreateProduct() {
-        productSaveRequestDto.setManual(List.of(new ManualDto()));
+        MaterialEntity materialEntity = new MaterialEntity();
+        materialEntity.setId(1L);
+        ManualDto manualDto = new ManualDto();
+        manualDto.setMaterialId(1L);
+        manualDto.setQuantity(2);
+        productSaveRequestDto.setManual(List.of(manualDto));
+        productEntity.setId(1L);
 
-        when(productMapper.toEntity(productSaveRequestDto, productEntity)).thenReturn(productEntity);
-        when(productRepository.save(productEntity)).thenReturn(productEntity);
+        when(productMapper.toEntity(productSaveRequestDto, new ProductEntity())).thenReturn(productEntity);
+        when(productRepository.save(any(ProductEntity.class))).thenReturn(productEntity);
+        when(materialRepository.findById(materialEntity.getId())).thenReturn(Optional.of(materialEntity));
+        when(productRepository.findById(productEntity.getId())).thenReturn(Optional.ofNullable(productEntity));
+
+        ManualEntity manualEntity = new ManualEntity(productEntity, materialEntity, 2);
+        when(manualRepository.save(any(ManualEntity.class))).thenReturn(manualEntity);
 
         productService.createProduct(productSaveRequestDto);
 
-        verify(productRepository, times(1))
-                .saveManual(productEntity.getId(), productSaveRequestDto
-                        .getManual().get(0).getMaterial(), productSaveRequestDto.getManual().get(0).getQuantity());
+        verify(productRepository, times(1)).save(any(ProductEntity.class));
+        verify(manualRepository, times(1)).save(any(ManualEntity.class));
     }
+
 
     @Test
     void testUpdateProduct() {
         Long productId = 1L;
-        productSaveRequestDto.setManual(List.of(new ManualDto()));
+        ManualDto manualDto = new ManualDto();
+        manualDto.setMaterialId(1L);
+        manualDto.setQuantity(2);
+
+        productSaveRequestDto.setManual(List.of(manualDto));
+        productEntity.setId(1L);
+
+        MaterialEntity materialEntity = new MaterialEntity();
+        materialEntity.setId(1L);
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(productEntity));
         when(productMapper.toEntity(productSaveRequestDto, productEntity)).thenReturn(productEntity);
+        when(materialRepository.findById(materialEntity.getId())).thenReturn(Optional.of(materialEntity));
+        doNothing().when(manualRepository).deleteAllByProduct(productEntity);
+        ManualEntity manualEntity = new ManualEntity(productEntity, materialEntity, 2);
+        when(manualRepository.save(any(ManualEntity.class))).thenReturn(manualEntity);
 
         productService.updateProduct(productId, productSaveRequestDto);
 
-        verify(productRepository, times(1)).save(productEntity);
-        verify(productRepository, times(1)).deleteAllManualByProductId(productId);
-        verify(productRepository, times(1)).saveManual(productId, productSaveRequestDto.getManual().get(0).getMaterial(), productSaveRequestDto.getManual().get(0).getQuantity());
+        verify(manualRepository, times(1)).deleteAllByProduct(productEntity);
+        verify(manualRepository, times(1)).save(any(ManualEntity.class));
+        verify(productRepository, times(1)).save(any(ProductEntity.class));
     }
+
 
     @Test
     void testDeleteProductById() {

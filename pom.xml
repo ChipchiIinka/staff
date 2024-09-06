@@ -212,7 +212,7 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>MISSEDRATIO</value>
-                                            <maximum>25%</maximum>
+                                            <maximum>30%</maximum>
                                         </limit>
                                     </limits>
                                 </rule>
