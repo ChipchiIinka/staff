@@ -1,8 +1,10 @@
 package ru.egartech.staff.service;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import ru.egartech.staff.entity.ManualEntity;
 import ru.egartech.staff.entity.MaterialEntity;
 import ru.egartech.staff.entity.ProductEntity;
@@ -65,16 +68,17 @@ class ProductServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void testGetAllProducts() {
         PageRequest pageRequest = PageRequest.of(1, 2, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<ProductEntity> productEntities = new PageImpl<>(List.of(productEntity), pageRequest, 3);
         List<ProductListInfoResponseDto> productDtos = List.of(productListInfoResponseDto);
 
-        when(productRepository.findAll(pageRequest)).thenReturn(productEntities);
+        when(productRepository.findAll(ArgumentMatchers.any(Specification.class), ArgumentMatchers.eq(pageRequest))).thenReturn(productEntities);
         when(productMapper.toListDto(productEntities)).thenReturn(productDtos);
 
-        ProductInfoPagingResponseDto response = productService.getAllProducts(1, 2, "asc", "id");
+        ProductInfoPagingResponseDto response = productService.getAllProducts(1, 2, "asc", "id", "");
 
         assertEquals(2, response.getPaging().getPages());
         assertEquals(3, response.getPaging().getCount());

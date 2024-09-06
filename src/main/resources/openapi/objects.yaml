@@ -39,14 +39,14 @@ components:
     pageNumber:
       name: pageNumber
       in: query
-      required: true
+      required: false
       description: Номер страницы
       schema:
         $ref: '#/components/schemas/PageNumber'
     pageSize:
       name: pageSize
       in: query
-      required: true
+      required: false
       description: Размер страницы
       schema:
         $ref: '#/components/schemas/PageSize'
@@ -64,6 +64,13 @@ components:
       description: Поле по которому будет производиться сортировка
       schema:
         $ref: '#/components/schemas/SortingFieldName'
+    searchingFilter:
+      name: searchingFilter
+      in: query
+      required: false
+      description: Поле по которому будет производиться поиск
+      schema:
+        $ref: '#/components/schemas/SearchingFilter'
 
   schemas:
     StaffId:
@@ -271,6 +278,11 @@ components:
       type: string
       description: Имя поля для сортировки
       default: 'id'
+
+    SearchingFilter:
+      type: string
+      description: Поле по которому будет идти поиск
+      default: ''
 
     #    Модель руководств
     Manual:

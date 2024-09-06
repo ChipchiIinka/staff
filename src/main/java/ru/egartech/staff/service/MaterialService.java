@@ -6,6 +6,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import ru.egartech.staff.cache.Caches;
 import ru.egartech.staff.entity.MaterialEntity;
@@ -17,6 +18,7 @@ import ru.egartech.staff.model.MaterialSaveRequestDto;
 import ru.egartech.staff.model.PagingDto;
 import ru.egartech.staff.repository.MaterialRepository;
 import ru.egartech.staff.repository.StorageRepository;
+import ru.egartech.staff.repository.specification.MaterialSpecification;
 import ru.egartech.staff.service.mapper.MaterialMapper;
 
 @Service
@@ -29,15 +31,18 @@ public class MaterialService {
 
     @Cacheable(Caches.MATERIALS_CACHE)
     public MaterialInfoPagingResponseDto getAllMaterials(Integer pageNo, Integer pageSize,
-                                                         String sortType, String sortFieldName) {
+                                                         String sortType, String sortFieldName, String searchingFilter) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortType), sortFieldName);
-        PagingDto paging = new PagingDto();
-        Page<MaterialEntity> materialEntities = materialRepository.findAll(
-                PageRequest.of(pageNo, pageSize, sort));
-        paging.setPageNumber(pageNo);
-        paging.setPageSize(pageSize);
-        paging.setCount(materialEntities.getTotalElements());
-        paging.setPages(materialEntities.getTotalPages());
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize, sort);
+        Specification<MaterialEntity> materialSpecification = Specification
+                .where(MaterialSpecification.hasName(searchingFilter))
+                .or(MaterialSpecification.hasType(searchingFilter));
+        Page<MaterialEntity> materialEntities = materialRepository.findAll(materialSpecification, pageRequest);
+        PagingDto paging = new PagingDto()
+                .pageNumber(pageNo)
+                .pageSize(pageSize)
+                .count(materialEntities.getTotalElements())
+                .pages(materialEntities.getTotalPages());
         return new MaterialInfoPagingResponseDto()
                 .paging(paging)
                 .content(materialMapper.toListDto(materialEntities));

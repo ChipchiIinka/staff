@@ -1,8 +1,10 @@
 package ru.egartech.staff.service;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import ru.egartech.staff.entity.StaffEntity;
 import ru.egartech.staff.model.*;
 import ru.egartech.staff.repository.StaffRepository;
@@ -55,16 +58,18 @@ class StaffServiceTest {
     }
 
     @Test
+    @SneakyThrows
     void testGetAllStaff() {
         PageRequest pageRequest = PageRequest.of(1, 2, Sort.by(Sort.Direction.ASC, "id"));
 
         Page<StaffEntity> staffEntities = new PageImpl<>(List.of(staffEntity), pageRequest, 3);
         List<StaffListInfoResponseDto> staffDtos = List.of(staffListInfoResponseDto);
 
-        when(staffRepository.findAll(pageRequest)).thenReturn(staffEntities);
+        when(staffRepository.findAll(ArgumentMatchers.any(Specification.class), ArgumentMatchers.eq(pageRequest)))
+                .thenReturn(staffEntities);
         when(staffMapper.toListDto(staffEntities)).thenReturn(staffDtos);
 
-        StaffInfoPagingResponseDto response = staffService.getAllStaff(1, 2, "asc", "id");
+        StaffInfoPagingResponseDto response = staffService.getAllStaff(1, 2, "asc", "id", "");
 
         assertEquals(2, response.getPaging().getPages());
         assertEquals(3, response.getPaging().getCount());
@@ -72,6 +77,7 @@ class StaffServiceTest {
         assertEquals(2, response.getPaging().getPageSize());
         assertEquals(staffDtos, response.getContent());
     }
+
 
     @Test
     void testGetStaffById() {
