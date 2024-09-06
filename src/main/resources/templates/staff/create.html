@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container min-vh-100">
+    <div class="py-5 text-center">
+        <h2>Добавление сотрудника</h2>
+        <p class="lead">Заполните поля и нажмите кнопку 'Добавить сотрудника'</p>
+    </div>
+
+    <form enctype="multipart/form-data" th:action="@{/api/staff/create}" th:object="${staff}" method="post" class="needs-validation"
+          novalidate>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-3 text-center">Поля для заполнения</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="firstName">Имя</label>
+                        <input th:field="*{firstName}" type="text" class="form-control" id="firstName" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="secondName">Фамилия</label>
+                        <input th:field="*{secondName}" type="text" class="form-control" id="secondName" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('secondName')}" th:errors="*{secondName}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="lastName">Отчество</label>
+                        <input th:field="*{lastName}" type="text" class="form-control" id="lastName" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="login">Логин</label>
+                        <input th:field="*{login}" type="text" class="form-control" id="login" placeholder="login" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="email">Email</label>
+                        <input th:field="*{email}" type="email" class="form-control" id="email" placeholder="email12@mail.com" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="phoneNumber">Номер телефона</label>
+                        <input th:field="*{phoneNumber}" type="text" class="form-control" id="phoneNumber" placeholder="+*(***)***-**-**" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="password">Пароль</label>
+                        <input th:field="*{password}" type="password" class="form-control" id="password" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="role">Роль</label>
+                        <select th:field="*{role}" class="form-control" id="role" required>
+                            <option value="" disabled selected>Выберите роль</option>
+                            <option th:each="roleEnum : ${T(ru.egartech.staff.model.UserRoleDto).values()}"
+                                    th:value="${roleEnum}"
+                                    th:text="${roleEnum}">Роль</option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="position">Должность</label>
+                        <select th:field="*{position}" class="form-control" id="position" required>
+                            <option value="" disabled selected>Выберите должность</option>
+                            <option th:each="positionEnum : ${T(ru.egartech.staff.model.StaffPositionDto).values()}"
+                                    th:value="${positionEnum}"
+                                    th:text="${positionEnum}">Должность</option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></small>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg" type="submit" value="Submit">Добавить сотрудника</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container min-vh-100">
+    <div class="py-5 text-center">
+        <h2>Изменение карточки сотрудника</h2>
+        <p class="lead">Заполните поля и нажмите кнопку 'Изменить карточку'</p>
+    </div>
+
+    <form enctype="multipart/form-data" th:action="@{/api/staff/{id}/update/card(id=${staffId})}" th:object="${staff}" th:method="patch" class="needs-validation"
+          novalidate>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-3 text-center">Поля для заполнения</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="firstName">Имя</label>
+                        <input th:field="*{firstName}" type="text" class="form-control" id="firstName" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="secondName">Фамилия</label>
+                        <input th:field="*{secondName}" type="text" class="form-control" id="secondName" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('secondName')}" th:errors="*{secondName}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="lastName">Отчество</label>
+                        <input th:field="*{lastName}" type="text" class="form-control" id="lastName" placeholder="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></small>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg" type="submit" value="Submit">Изменить карточку</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

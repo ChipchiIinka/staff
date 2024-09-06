@@ -117,15 +117,13 @@ class StaffMapperTest {
         StaffUpdateRequestDto requestDto = new StaffUpdateRequestDto()
                 .firstName("ИмяДВА")
                 .secondName("ФамилияДВА")
-                .lastName("ОтчествоДВА")
-                .password("123456");
+                .lastName("ОтчествоДВА");
 
         StaffEntity staffEntity = createStaffEntity(1L);
         staffMapper.toCardUpdate(requestDto, staffEntity);
 
         assertNotNull(staffEntity);
         assertEquals("ФамилияДВА ИмяДВА ОтчествоДВА", staffEntity.getFullName());
-        assertEquals("123456", staffEntity.getPassword());
     }
 
     @Test

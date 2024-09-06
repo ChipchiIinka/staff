@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light min-vh-100 d-flex flex-column">
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+        <h1 class="display-4 font-weight-normal">Мебельный</h1>
+        <p class="lead font-weight-normal">Рабочее пространство сотрудников мебельного магазина, для работы с заказами клиента</p>
+        <a class="btn btn-outline-secondary" href="/api/orders">Перейти к заказам</a>
+    </div>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

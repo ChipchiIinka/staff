@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Информация о товаре</h2>
+    </div>
+
+    <div class="row min-vh-100 d-flex">
+        <div class="col">
+            <h4>Детали товара</h4>
+            <a th:href="@{|/api/products|}" class="btn btn-secondary" role="button">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID:</strong> <span th:text="${product.id}"/></li>
+                <li class="list-group-item"><strong>Название:</strong> <span th:text="${product.name}"/></li>
+                <li class="list-group-item"><strong>Описание:</strong> <span th:text="${product.description}"/></li>
+                <li class="list-group-item"><strong>Тип:</strong> <span th:text="${product.type}"/></li>
+                <li class="list-group-item"><strong>Цена(Руб.):</strong> <span th:text="${product.price}"/></li>
+                <li class="list-group-item"><strong>Всего на складах:</strong> <span th:text="${product.available}"/></li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-center">
+                        <div class="w-50">
+                            <h5>Инструкция с нужными материалами</h5>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Материала</th>
+                                        <th>Количество</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="manual : ${product.manual}">
+                                        <td>
+                                            <a th:href="@{'/api/materials/' + ${manual.materialId}}" th:text="${manual.materialId}"></a>
+                                        </td>
+                                        <td th:text="${manual.quantity}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <br/>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container min-vh-100">
+    <div class="py-5 text-center">
+        <h2>Создание заказа</h2>
+        <p class="lead">Заполните поля и нажмите кнопку 'Создать заказ'</p>
+    </div>
+
+    <form enctype="multipart/form-data" th:action="@{/api/orders/create}" th:object="${order}" method="post" class="needs-validation"
+          novalidate>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-3 text-center">Поля для заполнения</h4>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="managerId">ID менеджера</label>
+                        <input th:field="*{managerId}" type="number" class="form-control" id="managerId" placeholder="Введите ID менеджера" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('managerId')}" th:errors="*{managerId}"></small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="city">Город</label>
+                        <input th:field="*{city}" type="text" class="form-control" id="city" placeholder="Введите город" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('city')}" th:errors="*{city}"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="street">Улица</label>
+                        <input th:field="*{street}" type="text" class="form-control" id="street" placeholder="Введите улицу" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('street')}" th:errors="*{street}"></small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="house">Дом</label>
+                        <input th:field="*{house}" type="text" class="form-control" id="house" placeholder="Введите дом" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('house')}" th:errors="*{house}"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="description">Описание заказа</label>
+                        <textarea th:field="*{description}" class="form-control" id="description" rows="3" placeholder="Введите описание"></textarea>
+                        <small class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label for="products">Выберите продукты</label>
+                        <select th:field="*{orderProducts}" multiple="multiple" class="form-control" id="products" required>
+                            <option th:each="product : ${products.content}" th:value="${product.id}" th:text="${product.name}"></option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('orderProducts')}" th:errors="*{orderProducts}"></small>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg" type="submit" value="Submit">Создать заказ</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container min-vh-100">
+    <div class="py-5 text-center">
+        <h2>Изменение содержания склада</h2>
+        <p class="lead">Заполните поля и нажмите кнопку 'Изменить содержание склада'</p>
+    </div>
+
+    <form enctype="multipart/form-data" action="#" th:action="@{|/api/storages/${storage.id}/update/items|}" th:object="${storage}" th:method="patch" class="needs-validation" novalidate>
+        <div class="row">
+            <div class="col-md-6">
+                <h4 class="mb-3">Материалы на складе</h4>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID Материала</th>
+                        <th>Количество</th>
+                    </tr>
+                    </thead>
+                    <tbody id="materials-container">
+                    <tr th:each="material, iterStat : ${storage.materials}">
+                        <td>
+                            <input type="text" class="form-control" th:field="*{materials[__${iterStat.index}__].id}" placeholder="Введите ID материала" required />
+                        </td>
+                        <td>
+                            <input th:field="*{materials[__${iterStat.index}__].quantity}" type="number" class="form-control" placeholder="Введите количество" required />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-outline-primary" onclick="addMaterialRow()">+ Добавить материал</button>
+            </div>
+
+            <div class="col-md-6">
+                <h4 class="mb-3">Продукты на складе</h4>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID Продукта</th>
+                        <th>Количество</th>
+                    </tr>
+                    </thead>
+                    <tbody id="products-container">
+                    <tr th:each="product, iterStat : ${storage.products}">
+                        <td>
+                            <input type="text" class="form-control" th:field="*{products[__${iterStat.index}__].id}" placeholder="Введите ID продукта" required />
+                        </td>
+                        <td>
+                            <input th:field="*{products[__${iterStat.index}__].quantity}" type="number" class="form-control" placeholder="Введите количество" required />
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-outline-primary" onclick="addProductRow()">+ Добавить продукт</button>
+            </div>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Обновить</button>
+    </form>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script>
+    let materialIndex = document.querySelectorAll('#materials-container tr').length;
+    let productIndex = document.querySelectorAll('#products-container tr').length;
+
+    function addMaterialRow() {
+        const materialsContainer = document.getElementById('materials-container');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="materials[${materialIndex}].id" class="form-control" placeholder="Введите ID материала" required />
+            </td>
+            <td>
+                <input type="number" name="materials[${materialIndex}].quantity" class="form-control" placeholder="Введите количество" required />
+            </td>
+        `;
+        materialsContainer.appendChild(newRow);
+        materialIndex++;
+    }
+
+    function addProductRow() {
+        const productsContainer = document.getElementById('products-container');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td>
+                <input type="text" name="products[${productIndex}].id" class="form-control" placeholder="Введите ID продукта" required />
+            </td>
+            <td>
+                <input type="number" name="products[${productIndex}].quantity" class="form-control" placeholder="Введите количество" required />
+            </td>
+        `;
+        productsContainer.appendChild(newRow);
+        productIndex++;
+    }
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package ru.egartech.staff.controller;
+package ru.egartech.staff.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +10,7 @@ import ru.egartech.staff.service.MaterialService;
 
 @RestController
 @RequiredArgsConstructor
-public class MaterialController implements MaterialsApi {
+public class MaterialRestController implements MaterialsApi {
 
     private final MaterialService materialService;
 

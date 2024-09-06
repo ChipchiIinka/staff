@@ -1,4 +1,4 @@
-package ru.egartech.staff.controller;
+package ru.egartech.staff.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,7 +8,7 @@ import ru.egartech.staff.service.StaffService;
 
 @RestController
 @RequiredArgsConstructor
-public class StaffController implements StaffApi {
+public class StaffRestController implements StaffApi {
 
     private final StaffService staffService;
 

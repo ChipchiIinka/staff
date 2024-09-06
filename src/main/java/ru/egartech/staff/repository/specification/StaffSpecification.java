@@ -36,4 +36,13 @@ public class StaffSpecification {
             return criteriaBuilder.like(root.get("position").as(String.class), positionPattern);
         };
     }
+
+    public static Specification<StaffEntity> hasDeleted(String isDeleted) {
+        return (root, query, criteriaBuilder) -> {
+            if (isDeleted == null || isDeleted.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            return criteriaBuilder.like(root.get("isDeleted").as(String.class), isDeleted.trim().toLowerCase() + "%");
+        };
+    }
 }

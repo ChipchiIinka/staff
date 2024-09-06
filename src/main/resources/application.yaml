@@ -13,6 +13,20 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
+  thymeleaf:
+    enabled: true
+    check-template: true
+    check-template-location: true
+    mode: HTML
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    cache: false
+  mvc:
+    hidden-method:
+      filter:
+        enabled: true
+
   liquibase:
     change-log: db/changelog/db.changelog-master.xml
 

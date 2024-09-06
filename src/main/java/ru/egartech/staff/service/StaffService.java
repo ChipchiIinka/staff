@@ -33,7 +33,8 @@ public class StaffService {
         Specification<StaffEntity> staffSpecification = Specification
                 .where(StaffSpecification.hasLogin(searchingFilter))
                 .or(StaffSpecification.hasFullName(searchingFilter))
-                .or(StaffSpecification.hasPosition(searchingFilter));
+                .or(StaffSpecification.hasPosition(searchingFilter))
+                .or(StaffSpecification.hasDeleted(searchingFilter));
         Page<StaffEntity> staffEntities = staffRepository.findAll(staffSpecification, pageRequest);
         PagingDto paging = new PagingDto()
                 .pageNumber(pageNo)
@@ -87,5 +88,12 @@ public class StaffService {
     @CacheEvict(value = Caches.STAFF_CACHE, allEntries = true)
     public void unbanStaffById(Long staffId) {
         staffRepository.markAsUnbanned(staffId);
+    }
+
+    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
+                                   int pageSize, String searchingFilter) {
+        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
+        return String.format("/api/staff?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s&searchingFilter=%s",
+                pageNumber, pageSize, field, newSortType, searchingFilter);
     }
 }

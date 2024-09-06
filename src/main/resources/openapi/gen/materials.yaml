@@ -159,6 +159,8 @@ components:
       type: object
       description: Данные материала в списке материалов
       properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/MaterialId'
         name:
           $ref: '../objects.yaml#/components/schemas/MaterialName'
         type:

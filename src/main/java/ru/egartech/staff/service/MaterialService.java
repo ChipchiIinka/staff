@@ -76,4 +76,11 @@ public class MaterialService {
     public void deleteMaterialById(Long materialId) {
         materialRepository.deleteById(materialId);
     }
+
+    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
+                                   int pageSize, String searchingFilter) {
+        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
+        return String.format("/api/materials?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s&searchingFilter=%s",
+                pageNumber, pageSize, field, newSortType, searchingFilter);
+    }
 }
