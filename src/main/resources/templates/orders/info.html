@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Информация о Заказе</h2>
+    </div>
+
+    <div class="row min-vh-100 d-flex">
+        <div class="col">
+            <h4>Детали Заказа</h4>
+            <a th:href="@{|/api/orders|}" class="btn btn-secondary" role="button">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <form th:action="@{|/api/orders/${order.id}/1|}" method="post" class="d-inline-block" onsubmit="return confirmNext()">
+                <input type="hidden" name="_method" value="patch" />
+                <button type="submit" class="btn btn-outline-success">
+                    <i class="bi bi-arrow-left-right"></i> Следующий статус
+                </button>
+            </form>
+            <form th:action="@{|/api/orders/${order.id}/restart|}" method="post" class="d-inline-block" onsubmit="return confirmRestart()">
+                <input type="hidden" name="_method" value="patch" />
+                <button type="submit" class="btn btn-outline-warning">
+                    <i class="bi bi-arrow-repeat"></i> Перезапустить заказ на подготовку
+                </button>
+            </form>
+            <form th:action="@{|/api/orders/${order.id}/cancel|}" method="post" class="d-inline-block" onsubmit="return confirmCancel()">
+                <input type="hidden" name="_method" value="patch" />
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-ban"></i> Отменить заказ
+                </button>
+            </form>
+
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID:</strong> <span th:text="${order.id}"/></li>
+                <li class="list-group-item"><strong>Адрес:</strong> <span th:text="${order.address}"/></li>
+                <li class="list-group-item"><strong>Описание:</strong> <span th:text="${order.description}"/></li>
+                <li class="list-group-item"><strong>Дата создания:</strong> <span th:text="${order.date}"/></li>
+                <li class="list-group-item"><strong>Статус:</strong> <span th:text="${order.status}"/></li>
+                <li class="list-group-item"><strong>Итоговая стоимость(Руб.):</strong> <span th:text="${order.amount}"/></li>
+                <li class="list-group-item"><strong>Статус оплаты:</strong> <span th:text="${order.isPaid ? 'Оплачено' : 'Не оплачено'}"/></li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <div class="w-33">
+                            <h5>Список нужных материалов</h5>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Материала</th>
+                                        <th>Количество</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="manual : ${neededMaterials.neededMaterials}">
+                                        <td>
+                                            <a th:href="@{'/api/materials/' + ${manual.materialId}}" th:text="${manual.materialId}"></a>
+                                        </td>
+                                        <td th:text="${manual.quantity}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="w-33">
+                            <h5>Товары заказа</h5>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Товара</th>
+                                        <th>Название</th>
+                                        <th>Цена(Руб.)</th>
+                                        <th>Количество</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="product : ${order.orderProducts}">
+                                        <td>
+                                            <a th:href="@{'/api/products/' + ${product.id}}" th:text="${product.id}"></a>
+                                        </td>
+                                        <td th:text="${product.name}"></td>
+                                        <td th:text="${product.price}"></td>
+                                        <td th:text="${product.quantity}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="w-33">
+                            <h5>Участвующие сотрудники</h5>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Сотрудника</th>
+                                        <th>ФИО</th>
+                                        <th>Должность</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="staff : ${order.orderStaff}">
+                                        <td>
+                                            <a th:href="@{'/api/staff/' + ${staff.id} + '/card'}" th:text="${staff.id}"></a>
+                                        </td>
+                                        <td th:text="${staff.fullName}"></td>
+                                        <td th:text="${staff.position}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <br/>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script type="text/javascript">
+    function confirmNext() {
+        return confirm('Вы уверены, что хотите перейти к следующему статусу заказа?');
+    }
+    function confirmRestart() {
+        return confirm('Вы уверены, что хотите перезапустить заказ?');
+    }
+    function confirmCancel() {
+        return confirm('Вы уверены, что хотите отменить заказ?');
+    }
+</script>
+</body>
+</html>

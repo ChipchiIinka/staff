@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Карточка сотрудника</h2>
+    </div>
+
+    <div class="row min-vh-100 d-flex">
+        <div class="col">
+            <h4>Детали сотрудника</h4>
+            <a th:href="@{|/api/staff|}" class="btn btn-secondary" role="button">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <a th:href="@{|/api/staff/${staff.id}/update/card|}" class="btn btn-warning" role="button">
+                <i class="bi bi-gear"></i>
+            </a>
+
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID:</strong> <span th:text="${staff.id}"/></li>
+                <li class="list-group-item"><strong>Логин:</strong> <span th:text="${staff.login}"/></li>
+                <li class="list-group-item"><strong>Фамилия:</strong> <span th:text="${staff.secondName}"/></li>
+                <li class="list-group-item"><strong>Имя:</strong> <span th:text="${staff.firstName}"/></li>
+                <li class="list-group-item"><strong>Отчество:</strong> <span th:text="${staff.lastName}"/></li>
+                <li class="list-group-item"><strong>Почта:</strong> <span th:text="${staff.email}"/></li>
+                <li class="list-group-item"><strong>Должность:</strong> <span th:text="${staff.position}"/></li>
+            </ul>
+            <br/>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

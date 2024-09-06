@@ -158,6 +158,8 @@ components:
       type: object
       description: Данные товара в списке товаров
       properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/ProductId'
         name:
           $ref: '../objects.yaml#/components/schemas/ProductName'
         type:

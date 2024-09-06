@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Информация о материале</h2>
+    </div>
+
+    <div class="row min-vh-100 d-flex">
+        <div class="col">
+            <h4>Детали материала</h4>
+            <a th:href="@{|/api/materials|}" class="btn btn-secondary" role="button">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID:</strong> <span th:text="${material.id}"/></li>
+                <li class="list-group-item"><strong>Название:</strong> <span th:text="${material.name}"/></li>
+                <li class="list-group-item"><strong>Описание:</strong> <span th:text="${material.description}"/></li>
+                <li class="list-group-item"><strong>Тип:</strong> <span th:text="${material.type}"/></li>
+                <li class="list-group-item"><strong>Длина:</strong> <span th:text="${material.getHeight()}"/></li>
+                <li class="list-group-item"><strong>Ширина:</strong> <span th:text="${material.getLength()}"/></li>
+                <li class="list-group-item"><strong>Высота:</strong> <span th:text="${material.getWidth()}"/></li>
+                <li class="list-group-item"><strong>Всего на складах:</strong> <span th:text="${material.available}"/></li>
+            </ul>
+            <br/>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

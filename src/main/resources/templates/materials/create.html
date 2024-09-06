@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container min-vh-100">
+    <div class="py-5 text-center">
+        <h2>Добавление материала</h2>
+        <p class="lead">Заполните поля и нажмите кнопку 'Добавить материал'</p>
+    </div>
+
+    <form enctype="multipart/form-data" action="#" th:action="@{/api/materials/create}" th:object="${material}" method="post" class="needs-validation"
+          novalidate>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-3 text-center">Поля для заполнения</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="name">Название</label>
+                        <input th:field="*{name}" type="text" class="form-control" id="name" placeholder="" value="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="description">Описание</label>
+                        <input th:field="*{description}" type="text" class="form-control" id="description" placeholder="" value="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="type">Тип</label>
+                        <select th:field="*{type}" class="form-control" id="type" required>
+                            <option value="" disabled selected>Выберите тип</option>
+                            <option th:each="typeEnum : ${T(ru.egartech.staff.model.MaterialTypeDto).values()}"
+                                    th:value="${typeEnum}"
+                                    th:text="${typeEnum}">Тип</option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('type')}" th:errors="*{type}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="length">Длина</label>
+                        <input th:field="*{length}" type="text" class="form-control" id="length" placeholder="" value="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('length')}" th:errors="*{length}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="width">Ширина</label>
+                        <input th:field="*{width}" type="text" class="form-control" id="width" placeholder="" value="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('width')}" th:errors="*{width}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="height">Высота</label>
+                        <input th:field="*{height}" type="text" class="form-control" id="height" placeholder="" value="" required>
+                        <small class="text-danger" th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></small>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-primary btn-lg" type="submit" value="Submit">Добавить материал</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

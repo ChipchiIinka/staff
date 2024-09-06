@@ -51,7 +51,7 @@
 API взаимодействие с приложением можно удобно посмотреть в файлах контракта openapi или по адресу http://localhost:8080/swagger-ui/index.html# после запуска приложения.
 ### 4. Схема структуры базы данных
 
-![img_1](https://github.com/user-attachments/assets/7cc0e42a-c7ab-420c-907b-b8b982022e0d)
+![public.png](src%2Fmain%2Fresources%2Fstatic%2Fpublic.png)
 
 ### 5. Использованные технологии и их версии
 

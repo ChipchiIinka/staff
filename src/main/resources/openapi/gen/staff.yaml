@@ -234,6 +234,8 @@ components:
     StaffListInfoResponse:
       type: object
       properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/StaffId'
         full_name:
           $ref: '../objects.yaml#/components/schemas/StaffFullName'
         position:
@@ -256,6 +258,8 @@ components:
           $ref: '../objects.yaml#/components/schemas/StaffLastName'
         email:
           $ref: '../objects.yaml#/components/schemas/StaffEmail'
+        phone:
+          $ref: '../objects.yaml#/components/schemas/StaffPhoneNumber'
         role:
           $ref: '../objects.yaml#/components/schemas/UserRole'
         position:
@@ -267,6 +271,8 @@ components:
       type: object
       description: Данные сотрудника для личной карточки
       properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/StaffId'
         login:
           $ref: '../objects.yaml#/components/schemas/StaffLogin'
         second_name:
@@ -313,8 +319,6 @@ components:
           $ref: '../objects.yaml#/components/schemas/StaffSecondName'
         last_name:
           $ref: '../objects.yaml#/components/schemas/StaffLastName'
-        password:
-          $ref: '../objects.yaml#/components/schemas/StaffPassword'
 
     StaffChangePositionRequest:
       type: object

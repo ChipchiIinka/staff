@@ -1,4 +1,4 @@
-package ru.egartech.staff.controller;
+package ru.egartech.staff.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,7 +10,7 @@ import ru.egartech.staff.service.ProductService;
 
 @RestController
 @RequiredArgsConstructor
-public class ProductController implements ProductsApi {
+public class ProductRestController implements ProductsApi {
 
     private final ProductService productService;
 

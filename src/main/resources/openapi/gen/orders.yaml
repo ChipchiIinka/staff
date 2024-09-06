@@ -228,6 +228,8 @@ components:
       type: object
       description: Данные заказа в списке заказов
       properties:
+        id:
+          $ref: '../objects.yaml#/components/schemas/OrderId'
         address:
           $ref: '../objects.yaml#/components/schemas/OrderAddress'
         date:

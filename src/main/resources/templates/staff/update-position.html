@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container min-vh-100">
+    <div class="py-5 text-center">
+        <h2>Изменения должности сотрудника</h2>
+        <p class="lead">Заполните поля и нажмите кнопку 'Изменить должность сотрудника'</p>
+    </div>
+
+    <form enctype="multipart/form-data" th:action="@{/api/staff/{id}/update/position(id=${staffId})}" th:object="${staff}" th:method="patch" class="needs-validation"
+          novalidate>
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-md-8">
+                <h4 class="mb-3 text-center">Поля для заполнения</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="role">Роль</label>
+                        <select th:field="*{role}" class="form-control" id="role" required>
+                            <option value="" disabled selected>Выберите роль</option>
+                            <option th:each="roleEnum : ${T(ru.egartech.staff.model.UserRoleDto).values()}"
+                                    th:value="${roleEnum}"
+                                    th:text="${roleEnum}">Роль</option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="position">Должность</label>
+                        <select th:field="*{position}" class="form-control" id="position" required>
+                            <option value="" disabled selected>Выберите должность</option>
+                            <option th:each="positionEnum : ${T(ru.egartech.staff.model.StaffPositionDto).values()}"
+                                    th:value="${positionEnum}"
+                                    th:text="${positionEnum}">Должность</option>
+                        </select>
+                        <small class="text-danger" th:if="${#fields.hasErrors('position')}" th:errors="*{position}"></small>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg" type="submit" value="Submit">Изменить должность сотрудника</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
