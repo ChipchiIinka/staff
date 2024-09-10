@@ -1,4 +1,4 @@
-package ru.egartech.staff.controller;
+package ru.egartech.staff.controller.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +11,7 @@ import ru.egartech.staff.service.OrderService;
 
 @RestController
 @RequiredArgsConstructor
-public class OrderController implements OrdersApi {
+public class OrderRestController implements OrdersApi {
 
     private final OrderService orderService;
 

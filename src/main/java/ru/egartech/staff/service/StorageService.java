@@ -3,7 +3,6 @@ package ru.egartech.staff.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +44,7 @@ public class StorageService {
     @Cacheable(value = Caches.STORAGES_CACHE, key = "#storageId")
     public StorageInfoResponseDto getStorageById(Long storageId) {
         StorageEntity storageEntity = storageRepository.findById(storageId)
-                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Склад не найден"));
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Склад не найден с id=" + storageId));
         List<ProductStorageInfoDto> productsDto =
                 storageMapper.toProductStorageListDto(storageRepository.findAllProductsByStorageId(storageId));
         List<MaterialStorageInfoDto> materialsDto =
@@ -60,7 +59,7 @@ public class StorageService {
     }
 
     @Transactional
-    @CachePut(value = Caches.STORAGES_CACHE, key = "#storageId")
+    @CacheEvict(value = Caches.STORAGES_CACHE, key = "#storageId")
     public void updateStorageItemsInfoById(Long storageId, StorageUpdateItemsRequestDto storageUpdateItemsRequestDto) {
         storageUpdateItemsRequestDto.getMaterials()
                 .forEach(material -> storageRepository.addMaterialToStorage(
@@ -80,5 +79,21 @@ public class StorageService {
     @CacheEvict(value = Caches.STORAGES_CACHE, allEntries = true)
     public void deleteStorageById(Long storageId) {
         storageRepository.deleteById(storageId);
+    }
+
+    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
+                                    int pageSize) {
+        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
+        return String.format("/api/storages?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s",
+                pageNumber, pageSize, field, newSortType);
+    }
+
+    public StorageSaveRequestDto getStorageDataById(Long storageId) {
+        StorageEntity storageEntity = storageRepository.findById(storageId)
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Склад не найден"));
+        return new StorageSaveRequestDto()
+                .city(storageEntity.getAddress().split(",")[0])
+                .street(storageEntity.getAddress().split(",")[1])
+                .house(storageEntity.getAddress().split(",")[2]);
     }
 }

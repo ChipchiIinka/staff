@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+
+<div th:insert="~{parts/header :: head}"></div>
+
+<body>
+
+<header th:insert="~{parts/navbar :: navbar}"></header>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Информация о складском помещении</h2>
+    </div>
+
+    <div class="row min-vh-100 d-flex">
+        <div class="col">
+            <h4>Детали склада</h4>
+            <a th:href="@{|/api/storages|}" class="btn btn-secondary" role="button">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <a th:href="@{|/api/storages/${storage.id}/update/items|}" class="btn btn-outline-warning" role="button">
+                <i class="bi bi-gear"></i>
+            </a>
+
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID:</strong> <span th:text="${storage.id}"/></li>
+                <li class="list-group-item"><strong>Адрес:</strong> <span th:text="${storage.address}"/></li>
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between">
+                        <!-- Материалы -->
+                        <div class="w-50 me-3">
+                            <h5>Материалы</h5>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Материала</th>
+                                        <th>Количество</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="material : ${storage.materials}">
+                                        <td>
+                                            <a th:href="@{'/api/materials/' + ${material.id}}" th:text="${material.id}"></a>
+                                        </td>
+                                        <td th:text="${material.quantity}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="w-50">
+                            <h5>Товары</h5>
+                            <div style="max-height: 300px; overflow-y: auto;">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>ID Товара</th>
+                                        <th>Количество</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="product : ${storage.products}">
+                                        <td>
+                                            <a th:href="@{'/api/products/' + ${product.id}}" th:text="${product.id}"></a>
+                                        </td>
+                                        <td th:text="${product.quantity}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <br/>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="~{parts/footer :: footer}"></footer>
+
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

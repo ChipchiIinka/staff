@@ -1,0 +1,43 @@
+<div th:fragment="pagination(pageable, url, sortFieldName, sortType)">
+    <nav aria-label="Page navigation" class="d-flex justify-content-center align-items-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${pageable.pageNumber == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{${url}(pageNumber=${pageable.pageNumber - 1}, pageSize=${pageable.pageSize}, sortFieldName=${sortFieldName}, sortType=${sortType})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li th:each="i : ${#numbers.sequence(0, pageable.pages - 1)}" class="page-item" th:classappend="${pageable.pageNumber == i} ? 'active'">
+                <a class="page-link" th:href="@{${url}(pageNumber=${i}, pageSize=${pageable.pageSize}, sortFieldName=${sortFieldName}, sortType=${sortType})}" th:text="${i + 1}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${pageable.pageNumber == pageable.pages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{${url}(pageNumber=${pageable.pageNumber + 1}, pageSize=${pageable.pageSize}, sortFieldName=${sortFieldName}, sortType=${sortType})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<div th:fragment="pagination_with_search(pageable, url, searchingFilter, sortFieldName, sortType)">
+    <nav aria-label="Page navigation" class="d-flex justify-content-center align-items-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${pageable.pageNumber == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{${url}(pageNumber=${pageable.pageNumber - 1}, pageSize=${pageable.pageSize}, searchingFilter=${searchingFilter}, sortFieldName=${sortFieldName}, sortType=${sortType})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <li th:each="i : ${#numbers.sequence(0, pageable.pages - 1)}" class="page-item" th:classappend="${pageable.pageNumber == i} ? 'active'">
+                <a class="page-link" th:href="@{${url}(pageNumber=${i}, pageSize=${pageable.pageSize}, searchingFilter=${searchingFilter}, sortFieldName=${sortFieldName}, sortType=${sortType})}" th:text="${i + 1}">1</a>
+            </li>
+
+            <li class="page-item" th:classappend="${pageable.pageNumber == pageable.pages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{${url}(pageNumber=${pageable.pageNumber + 1}, pageSize=${pageable.pageSize}, searchingFilter=${searchingFilter}, sortFieldName=${sortFieldName}, sortType=${sortType})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
