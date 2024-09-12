@@ -171,9 +171,8 @@ public class OrderService {
             case ASSEMBLY -> order.getOrderDetails().setStatus(Status.PACKAGING);
             case PACKAGING -> order.getOrderDetails().setStatus(Status.WAITING_FOR_DELIVERY);
             case WAITING_FOR_DELIVERY -> order.getOrderDetails().setStatus(Status.DELIVERY);
-            case DELIVERY -> order.getOrderDetails().setStatus(Status.COMPLETED);
             case CANCELED -> order.getOrderDetails().setStatus(Status.CANCELED);
-            default -> throw new StaffException(ErrorType.COMMON_ERROR);
+            default -> order.getOrderDetails().setStatus(Status.COMPLETED);
         }
     }
 

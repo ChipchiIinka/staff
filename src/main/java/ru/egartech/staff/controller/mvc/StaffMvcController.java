@@ -76,7 +76,7 @@ public class StaffMvcController {
     @GetMapping("/{staffId}/update/card")
     public String showUpdateStaffCardForm(@PathVariable Long staffId, Model model) {
         model.addAttribute(MODEL_ATTRIBUTE_STAFF, staffService.getStaffById(staffId));
-        return "/staff/update-card";
+        return "staff/update-card";
     }
 
     @PatchMapping("/{staffId}/update/card")
@@ -84,7 +84,7 @@ public class StaffMvcController {
                                       @ModelAttribute(MODEL_ATTRIBUTE_STAFF) @Valid StaffUpdateRequestDto staffUpdateRequestDto,
                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "/staff/update-card";
+            return "staff/update-card";
         }
         staffService.updateStaffCardById(staffId, staffUpdateRequestDto);
         return  REDIRECT_TO_STAFF_WITH_ID + staffId + "/card";
