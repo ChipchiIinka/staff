@@ -13,7 +13,7 @@
         <p class="lead">Заполните поля и нажмите кнопку 'Добавить товар'</p>
     </div>
 
-    <form enctype="multipart/form-data" th:action="@{/api/products}" th:object="${product}" th:method="post" class="needs-validation" novalidate>
+    <form enctype="multipart/form-data" th:action="@{/api/products/create}" th:object="${product}" th:method="post" class="needs-validation" novalidate>
     <div class="d-flex justify-content-center align-items-center">
             <div class="col-md-8">
                 <h4 class="mb-3 text-center">Поля для заполнения</h4>
