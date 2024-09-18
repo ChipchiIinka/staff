@@ -25,6 +25,15 @@ public class StorageService {
     private final StorageRepository storageRepository;
     private final StorageMapper storageMapper;
 
+    /**
+     * Получение списка всех складов с постраничной навигацией и сортировкой
+     *
+     * @param pageNo      Номер страницы
+     * @param pageSize    Размер страницы
+     * @param sortType    Тип сортировки (asc/desc)
+     * @param sortFieldName Поле для сортировки
+     * @return Страница складов с информацией о постраничной навигации
+     */
     @Cacheable(Caches.STORAGES_CACHE)
     public StorageInfoPagingResponseDto getAllStorages(Integer pageNo, Integer pageSize,
                                                        String sortType, String sortFieldName) {
@@ -41,6 +50,12 @@ public class StorageService {
                 .content(storageMapper.toListDto(storageEntities));
     }
 
+    /**
+     * Получение информации о складе по его идентификатору
+     *
+     * @param storageId Идентификатор склада
+     * @return Детальная информация о складе, товарах и материалах
+     */
     @Cacheable(value = Caches.STORAGES_CACHE, key = "#storageId")
     public StorageInfoResponseDto getStorageById(Long storageId) {
         StorageEntity storageEntity = storageRepository.findById(storageId)
@@ -52,12 +67,23 @@ public class StorageService {
         return storageMapper.toDto(storageEntity, productsDto, materialsDto);
     }
 
+    /**
+     * Создание нового склада
+     *
+     * @param storageSaveRequestDto Данные для создания нового склада
+     */
     @CacheEvict(value = Caches.STORAGES_CACHE, allEntries = true)
     public void createStorage(StorageSaveRequestDto storageSaveRequestDto) {
         StorageEntity storageEntity = new StorageEntity();
         storageRepository.save(storageMapper.toEntity(storageSaveRequestDto, storageEntity));
     }
 
+    /**
+     * Обновление информации о товарах и материалах на складе
+     *
+     * @param storageId                    Идентификатор склада
+     * @param storageUpdateItemsRequestDto DTO с новой информацией о товарах и материалах
+     */
     @Transactional
     @CacheEvict(value = Caches.STORAGES_CACHE, key = "#storageId")
     public void updateStorageItemsInfoById(Long storageId, StorageUpdateItemsRequestDto storageUpdateItemsRequestDto) {
@@ -69,6 +95,12 @@ public class StorageService {
                         storageId, product.getId(), product.getQuantity()));
     }
 
+    /**
+     * Обновление информации о складе
+     *
+     * @param storageId            Идентификатор склада
+     * @param storageSaveRequestDto DTO с обновленными данными склада
+     */
     @CacheEvict(value = Caches.STORAGES_CACHE, allEntries = true)
     public void updateStorage(Long storageId, StorageSaveRequestDto storageSaveRequestDto) {
         StorageEntity storageEntity = storageRepository.findById(storageId)
@@ -76,18 +108,21 @@ public class StorageService {
         storageRepository.save(storageMapper.toEntity(storageSaveRequestDto, storageEntity));
     }
 
+    /**
+     * Удаление склада по его идентификатору
+     *
+     * @param storageId Идентификатор склада
+     */
     @CacheEvict(value = Caches.STORAGES_CACHE, allEntries = true)
     public void deleteStorageById(Long storageId) {
         storageRepository.deleteById(storageId);
     }
 
-    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
-                                    int pageSize) {
-        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
-        return String.format("/api/storages?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s",
-                pageNumber, pageSize, field, newSortType);
-    }
-
+    /**
+     * Получение данных о сохраненном складе для редактирования
+     *
+     * @param storageId Уникальный идентификатор склада
+     */
     public StorageSaveRequestDto getStorageDataById(Long storageId) {
         StorageEntity storageEntity = storageRepository.findById(storageId)
                 .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Склад не найден"));

@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.egartech.staff.model.*;
+import ru.egartech.staff.service.MvcService;
 import ru.egartech.staff.service.StaffService;
 
 import java.util.function.Function;
@@ -21,6 +22,7 @@ public class StaffMvcController {
     private static final String REDIRECT_TO_STAFF_WITH_ID = "redirect:/api/staff/";
 
     private final StaffService staffService;
+    private final MvcService mvcService;
 
     @GetMapping
     public String getAllStaff(
@@ -38,7 +40,8 @@ public class StaffMvcController {
         model.addAttribute("sortFieldName", sortFieldName);
         model.addAttribute("searchingFilter", searchingFilter);
         model.addAttribute("sortLink", (Function<String, String>) field ->
-                staffService.generateSortLink(field, sortFieldName, sortType, pageNumber, pageSize, searchingFilter));
+                mvcService.generateSortLink(MODEL_ATTRIBUTE_STAFF, field, sortFieldName, sortType,
+                        pageNumber, pageSize, searchingFilter));
         return "staff/list";
     }
 

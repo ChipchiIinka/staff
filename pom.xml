@@ -231,6 +231,7 @@
                         <exclude>ru/egartech/staff/cache/**</exclude>
                         <exclude>ru/egartech/staff/aspect/**</exclude>
                         <exclude>ru/egartech/staff/repository/specification/**</exclude>
+                        <exclude>ru/egartech/staff/service/MvcService.class</exclude>
                     </excludes>
                 </configuration>
             </plugin>

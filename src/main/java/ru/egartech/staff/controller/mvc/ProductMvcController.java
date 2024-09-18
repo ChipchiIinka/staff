@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.egartech.staff.model.ProductInfoResponseDto;
 import ru.egartech.staff.model.ProductSaveRequestDto;
+import ru.egartech.staff.service.MvcService;
 import ru.egartech.staff.service.ProductService;
 
 import java.util.function.Function;
@@ -22,6 +23,7 @@ public class ProductMvcController {
     private static final String REDIRECT_TO_PRODUCTS_WITH_ID = "redirect:/api/products/";
 
     private final ProductService productService;
+    private final MvcService mvcService;
 
     @GetMapping
     public String getAllProducts(
@@ -39,7 +41,8 @@ public class ProductMvcController {
         model.addAttribute("sortFieldName", sortFieldName);
         model.addAttribute("searchingFilter", searchingFilter);
         model.addAttribute("sortLink", (Function<String, String>) field ->
-                productService.generateSortLink(field, sortFieldName, sortType, pageNumber, pageSize, searchingFilter));
+                mvcService.generateSortLink("products", field, sortFieldName, sortType,
+                        pageNumber, pageSize, searchingFilter));
         return "products/list";
     }
 

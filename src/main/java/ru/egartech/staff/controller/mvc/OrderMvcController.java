@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.egartech.staff.model.*;
+import ru.egartech.staff.service.MvcService;
 import ru.egartech.staff.service.OrderService;
 import ru.egartech.staff.service.ProductService;
 
@@ -23,6 +24,7 @@ public class OrderMvcController {
 
     private final OrderService orderService;
     private final ProductService productService;
+    private final MvcService mvcService;
 
     @GetMapping
     public String getAllOrders(
@@ -40,7 +42,8 @@ public class OrderMvcController {
         model.addAttribute("sortFieldName", sortFieldName);
         model.addAttribute("searchingFilter", searchingFilter);
         model.addAttribute("sortLink", (Function<String, String>) field ->
-                orderService.generateSortLink(field, sortFieldName, sortType, pageNumber, pageSize, searchingFilter));
+                mvcService.generateSortLink("orders", field, sortFieldName, sortType,
+                        pageNumber, pageSize, searchingFilter));
         return "orders/list";
     }
 

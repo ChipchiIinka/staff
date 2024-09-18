@@ -39,6 +39,16 @@ public class ProductService {
     private final StorageRepository storageRepository;
     private final MaterialRepository materialRepository;
 
+    /**
+     * Получение списка всех товаров с постраничной навигацией, фильтрацией и сортировкой
+     *
+     * @param pageNo          Номер страницы
+     * @param pageSize        Размер страницы
+     * @param sortType        Тип сортировки (asc/desc)
+     * @param sortFieldName   Поле для сортировки
+     * @param searchingFilter Фильтр для поиска по названию или типу
+     * @return Страница товаров с информацией о постраничной навигации
+     */
     @Cacheable(Caches.PRODUCTS_CACHE)
     public ProductInfoPagingResponseDto getAllProducts(Integer pageNo, Integer pageSize,
                                                        String sortType, String sortFieldName, String searchingFilter) {
@@ -58,10 +68,16 @@ public class ProductService {
                 .content(productMapper.toListDto(productEntities));
     }
 
+    /**
+     * Получение информации о товаре по его идентификатору
+     *
+     * @param productId Идентификатор товара
+     * @return Информация о товаре, включая доступное количество на складе
+     */
     @Cacheable(value = Caches.PRODUCTS_CACHE, key = "#productId")
     public ProductInfoResponseDto getProductById(Long productId) {
         ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден"));
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Этот товар не найден"));
         Long availableQuantity = storageRepository.findAvailableByProductId(productId);
         if (availableQuantity == null) {
             availableQuantity = 0L;
@@ -70,6 +86,11 @@ public class ProductService {
         return productMapper.toDto(product, manual, availableQuantity);
     }
 
+    /**
+     * Создание нового товара, включая привязку мануалов (списка нужных материалов)
+     *
+     * @param productDto Данные для создания нового товара
+     */
     @Transactional
     @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     public void createProduct(ProductSaveRequestDto productDto) {
@@ -79,12 +100,18 @@ public class ProductService {
                 createManual(productId, manualDto.getMaterialId(), manualDto.getQuantity()));
     }
 
+    /**
+     * Обновление информации о товаре по его идентификатору, включая обновление мануалов
+     *
+     * @param productId  Идентификатор товара
+     * @param productDto DTO с обновленной информацией о товаре
+     */
     @Transactional
     @CacheEvict(value = Caches.PRODUCTS_CACHE, key = "#productId")
     public void updateProduct(Long productId, ProductSaveRequestDto productDto) {
         List<ManualDto> manualsDto = productDto.getManual();
         ProductEntity productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Товар не найден"));
+                .orElseThrow(() -> new StaffException(ErrorType.NOT_FOUND, "Этот товар не найден"));
         if(!manualsDto.isEmpty()){
             manualRepository.deleteAllByProduct(productEntity);
             manualsDto.forEach(manualDto ->
@@ -93,25 +120,30 @@ public class ProductService {
         productRepository.save(productMapper.toEntity(productDto, productEntity));
     }
 
+    /**
+     * Удаление товара по его идентификатору
+     *
+     * @param productId Идентификатор товара
+     */
     @CacheEvict(value = Caches.PRODUCTS_CACHE, allEntries = true)
     public void deleteProductById(Long productId) {
         productRepository.deleteById(productId);
     }
 
+    /**
+     * Создание мануала (связь между товаром и материалом) для товара
+     *
+     * @param productId  Идентификатор товара
+     * @param materialId Идентификатор материала
+     * @param quantity   Количество материала для товара
+     */
     private void createManual(Long productId, Long materialId, Integer quantity) {
         ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Товар не найден"));
         MaterialEntity material = materialRepository.findById(materialId)
-                .orElseThrow(() -> new RuntimeException("Material not found"));
+                .orElseThrow(() -> new RuntimeException("Материал не найден"));
         ManualEntity manual = new ManualEntity(product, material, quantity);
         manualRepository.save(manual);
-    }
-
-    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
-                                   int pageSize, String searchingFilter) {
-        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
-        return String.format("/api/products?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s&searchingFilter=%s",
-                pageNumber, pageSize, field, newSortType, searchingFilter);
     }
 }
 

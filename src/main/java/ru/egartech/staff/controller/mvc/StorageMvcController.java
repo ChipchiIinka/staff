@@ -10,8 +10,7 @@ import ru.egartech.staff.model.StorageInfoPagingResponseDto;
 import ru.egartech.staff.model.StorageInfoResponseDto;
 import ru.egartech.staff.model.StorageSaveRequestDto;
 import ru.egartech.staff.model.StorageUpdateItemsRequestDto;
-import ru.egartech.staff.service.MaterialService;
-import ru.egartech.staff.service.ProductService;
+import ru.egartech.staff.service.MvcService;
 import ru.egartech.staff.service.StorageService;
 
 import java.util.function.Function;
@@ -26,8 +25,7 @@ public class StorageMvcController {
     private static final String REDIRECT_TO_STORAGES_WITH_ID = "redirect:/api/storages/";
 
     private final StorageService storageService;
-    private final MaterialService materialService;
-    private final ProductService productService;
+    private final MvcService mvcService;
 
     @GetMapping
     public String getAllStorages(@RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -42,7 +40,8 @@ public class StorageMvcController {
         model.addAttribute("sortType", sortType);
         model.addAttribute("sortFieldName", sortFieldName);
         model.addAttribute("sortLink", (Function<String, String>) field ->
-                storageService.generateSortLink(field, sortFieldName, sortType, pageNumber, pageSize));
+                mvcService.generateSortLink("storages", field, sortFieldName,
+                        sortType, pageNumber, pageSize));
         return "storages/list";
     }
 

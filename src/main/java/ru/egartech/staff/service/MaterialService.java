@@ -29,6 +29,16 @@ public class MaterialService {
 
     private final StorageRepository storageRepository;
 
+    /**
+     * Получение списка всех материалов с постраничной навигацией, фильтрацией и сортировкой
+     *
+     * @param pageNo          Номер страницы
+     * @param pageSize        Размер страницы
+     * @param sortType        Тип сортировки (asc/desc)
+     * @param sortFieldName   Поле для сортировки
+     * @param searchingFilter Фильтр по названию или типу материала
+     * @return Страница материалов с информацией о постраничной навигации
+     */
     @Cacheable(Caches.MATERIALS_CACHE)
     public MaterialInfoPagingResponseDto getAllMaterials(Integer pageNo, Integer pageSize,
                                                          String sortType, String sortFieldName, String searchingFilter) {
@@ -48,6 +58,12 @@ public class MaterialService {
                 .content(materialMapper.toListDto(materialEntities));
     }
 
+    /**
+     * Получение информации о материале по его идентификатору
+     *
+     * @param materialId Идентификатор материала
+     * @return Информация о материале, включая доступное количество на складе
+     */
     @Cacheable(value = Caches.MATERIALS_CACHE, key = "#materialId")
     public MaterialInfoResponseDto getMaterialById(Long materialId) {
         Long availableQuantity = storageRepository.findAvailableByMaterialId(materialId);
@@ -59,12 +75,23 @@ public class MaterialService {
         return materialMapper.toDto(material, availableQuantity);
     }
 
+    /**
+     * Создание нового материала.
+     *
+     * @param materialDto Данные для создания нового материала
+     */
     @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
     public void createMaterial(MaterialSaveRequestDto materialDto) {
         MaterialEntity material = new MaterialEntity();
         materialRepository.save(materialMapper.toEntity(materialDto, material));
     }
 
+    /**
+     * Обновление информации о материале по его идентификатору
+     *
+     * @param materialId   Идентификатор материала
+     * @param materialDto  DTO с обновленной информацией о материале
+     */
     @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
     public void updateMaterial(Long materialId, MaterialSaveRequestDto materialDto) {
         MaterialEntity material = materialRepository.findById(materialId)
@@ -72,15 +99,13 @@ public class MaterialService {
         materialRepository.save(materialMapper.toEntity(materialDto, material));
     }
 
+    /**
+     * Удаление материала по его идентификатору.
+     *
+     * @param materialId Идентификатор материала
+     */
     @CacheEvict(value = Caches.MATERIALS_CACHE, allEntries = true)
     public void deleteMaterialById(Long materialId) {
         materialRepository.deleteById(materialId);
-    }
-
-    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
-                                   int pageSize, String searchingFilter) {
-        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
-        return String.format("/api/materials?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s&searchingFilter=%s",
-                pageNumber, pageSize, field, newSortType, searchingFilter);
     }
 }

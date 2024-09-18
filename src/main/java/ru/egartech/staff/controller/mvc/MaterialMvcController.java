@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.egartech.staff.model.MaterialInfoResponseDto;
 import ru.egartech.staff.model.MaterialSaveRequestDto;
 import ru.egartech.staff.service.MaterialService;
+import ru.egartech.staff.service.MvcService;
 
 import java.util.function.Function;
 
@@ -22,6 +23,7 @@ public class MaterialMvcController {
     private static final String REDIRECT_TO_MATERIALS_WITH_ID = "redirect:/api/materials/";
 
     private final MaterialService materialService;
+    private final MvcService mvcService;
 
     @GetMapping
     public String getAllMaterials(
@@ -39,7 +41,8 @@ public class MaterialMvcController {
         model.addAttribute("sortFieldName", sortFieldName);
         model.addAttribute("searchingFilter", searchingFilter);
         model.addAttribute("sortLink", (Function<String, String>) field ->
-                materialService.generateSortLink(field, sortFieldName, sortType, pageNumber, pageSize, searchingFilter));
+                mvcService.generateSortLink("materials", field, sortFieldName, sortType,
+                        pageNumber, pageSize, searchingFilter));
         return "materials/list";
     }
 

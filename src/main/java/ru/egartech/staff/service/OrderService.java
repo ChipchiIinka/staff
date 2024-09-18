@@ -38,6 +38,12 @@ public class OrderService {
     private final StaffRepository staffRepository;
     private final ProductRepository productRepository;
 
+    /**
+     * Получение информации о необходимых материалах для заказа по его идентификатору.
+     *
+     * @param orderId Идентификатор заказа
+     * @return Информация о необходимых материалах для выполнения заказа(для всех товаров заказа)
+     */
     @Cacheable(value = Caches.ORDERS_CACHE, key = "'materials:' + #orderId")
     public OrderMaterialInfoResponseDto getAllNeededMaterialsInfo(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
@@ -62,6 +68,16 @@ public class OrderService {
         return orderMaterialInfoResponseDto;
     }
 
+    /**
+     * Получение списка всех заказов с постраничной навигацией, фильтрацией и сортировкой
+     *
+     * @param pageNo          Номер страницы
+     * @param pageSize        Размер страницы
+     * @param sortType        Тип сортировки (asc/desc)
+     * @param sortFieldName   Поле для сортировки
+     * @param searchingFilter Фильтр для поиска по статусу заказа
+     * @return Страница заказов с информацией о постраничной навигации
+     */
     @Cacheable(Caches.ORDERS_CACHE)
     public OrderInfoPagingResponseDto getAllOrders(Integer pageNo, Integer pageSize,
                                                    String sortType, String sortFieldName, String searchingFilter){
@@ -80,6 +96,12 @@ public class OrderService {
                 .content(orderMapper.toListDto(orderEntities));
     }
 
+    /**
+     * Получение информации о заказе по его идентификатору.
+     *
+     * @param orderId Идентификатор заказа
+     * @return Полная информация о заказе, включая сотрудников и товары
+     */
     @Cacheable(value = Caches.ORDERS_CACHE, key = "'order:' + #orderId")
     public OrderInfoResponseDto getOrderById(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
@@ -96,6 +118,11 @@ public class OrderService {
         return responseDto;
     }
 
+    /**
+     * Создание нового заказа.
+     *
+     * @param orderDto DTO для создания нового заказа
+     */
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void createOrder(OrderSaveRequestDto orderDto) {
         OrderEntity order = new OrderEntity();
@@ -112,6 +139,12 @@ public class OrderService {
         orderRepository.save(orderMapper.toEntity(orderDto, order, staff, productList, amount));
     }
 
+    /**
+     * Перевод заказа на следующий статус и привязка нового сотрудника, если требуется.
+     *
+     * @param orderId Идентификатор заказа
+     * @param staffId Идентификатор сотрудника
+     */
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToNextStatus(Long orderId, Long staffId) {
         OrderEntity order = orderRepository.findById(orderId)
@@ -128,6 +161,11 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    /**
+     * Перезапуск заказа, путем перевода в статус "Подготовка", если это возможно.
+     *
+     * @param orderId Идентификатор заказа
+     */
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToPreparationStatus(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
@@ -138,6 +176,11 @@ public class OrderService {
         } else throw new StaffException(ErrorType.CLIENT_ERROR, "Нельзя перезапустить заказ с этого состояния");
     }
 
+    /**
+     * Перевод заказа в статус "Отменен".
+     *
+     * @param orderId Идентификатор заказа
+     */
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void orderToCancelStatus(Long orderId) {
         OrderEntity order = orderRepository.findById(orderId)
@@ -146,17 +189,28 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    /**
+     * Удаление заказа по его идентификатору.
+     *
+     * @param orderId Идентификатор заказа
+     */
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void deleteOrderById(Long orderId) {
         orderRepository.deleteById(orderId);
     }
 
+    /**
+     * Удаление всех старых отмененных заказов, срок которых превышает один месяц.
+     */
     public void deleteAllUnusedOrders(){
         LocalDate thresholdDate = LocalDate.now().minusMonths(1);
         orderRepository.deleteExpiredCanceledOrders(thresholdDate, Status.CANCELED);
     }
 
-    //Удалять все старые отмененные запросы в конце каждого месяца
+    /**
+     * Удаление старых отмененных заказов в конце каждого месяца.
+     * Запуск по расписанию в последний день месяца в 23:59:59.
+     */
     @Scheduled(cron = "59 59 23 L * ?")
     @CacheEvict(value = Caches.ORDERS_CACHE, allEntries = true)
     public void deleteOldUnusedOrdersAtEveryEndOfMonth() {
@@ -174,12 +228,5 @@ public class OrderService {
             case CANCELED -> order.getOrderDetails().setStatus(Status.CANCELED);
             default -> order.getOrderDetails().setStatus(Status.COMPLETED);
         }
-    }
-
-    public String generateSortLink(String field, String currentSortField, String currentSortType, int pageNumber,
-                                   int pageSize, String searchingFilter) {
-        String newSortType = "asc".equals(currentSortType) && field.equals(currentSortField) ? "desc" : "asc";
-        return String.format("/api/orders?pageNumber=%d&pageSize=%d&sortFieldName=%s&sortType=%s&searchingFilter=%s",
-                pageNumber, pageSize, field, newSortType, searchingFilter);
     }
 }
